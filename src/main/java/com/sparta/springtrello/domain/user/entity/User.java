@@ -2,6 +2,7 @@ package com.sparta.springtrello.domain.user.entity;
 
 import com.sparta.springtrello.common.Timestamped;
 import com.sparta.springtrello.domain.board.entity.BoardUser;
+import com.sparta.springtrello.domain.card.entity.CardUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -65,6 +66,10 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
     private List<BoardUser> boardUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private List<CardUser> cardUsers = new ArrayList<>();
 
     @Builder
     public User(String username, String password, UserStatusEnum userStatus) {
