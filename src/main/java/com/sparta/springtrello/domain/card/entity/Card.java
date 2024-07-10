@@ -1,6 +1,8 @@
 package com.sparta.springtrello.domain.card.entity;
 
 import com.sparta.springtrello.common.Timestamped;
+import com.sparta.springtrello.domain.column.entity.TaskColumn;
+import com.sparta.springtrello.domain.comment.entity.Comment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
