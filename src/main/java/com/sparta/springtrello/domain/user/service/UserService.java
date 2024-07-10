@@ -1,10 +1,7 @@
 package com.sparta.springtrello.domain.user.service;
 
 import com.sparta.springtrello.common.S3Uploader;
-import com.sparta.springtrello.domain.user.dto.ProfileResponseDto;
-import com.sparta.springtrello.domain.user.dto.SignupRequestDto;
-import com.sparta.springtrello.domain.user.dto.UpdatePasswordRequestDto;
-import com.sparta.springtrello.domain.user.dto.UpdateProfileRequestDto;
+import com.sparta.springtrello.domain.user.dto.*;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.domain.user.entity.UserStatusEnum;
@@ -67,7 +64,7 @@ public class UserService {
 
     // 비밀번호 변경
     @Transactional
-    public void updatePassword(User loginUser, UpdatePasswordRequestDto requestDto) {
+    public void updatePassword(User loginUser, PasswordUpdateRequestDto requestDto) {
         User user = userAdapter.findById(loginUser.getId());
 
         // 현재 비밀번호 확인
@@ -88,7 +85,7 @@ public class UserService {
 
     // 프로필 업로드
     @Transactional
-    public void updateProfile(User user, UpdateProfileRequestDto requestDto, MultipartFile profilePicture) {
+    public void updateProfile(User user, ProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
         user.setNickname(requestDto.getNickname());
         user.setIntroduce(requestDto.getIntroduce());
 
@@ -119,9 +116,14 @@ public class UserService {
 
     // 회원 탈퇴
     @Transactional
-    public void deleteUser(User user) {
+    public void deleteUser(User user, AccountDeleteRequestDto requestDto) {
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new PasswordException(ResponseCodeEnum.PASSWORD_INCORRECT);
+        }
+
         user.setUserStatus(UserStatusEnum.STATUS_DELETED);
-        user.setRefreshToken(null);
+        user.setRefreshToken(null); // 리프레시 토큰을 무효화
         userAdapter.save(user);
     }
 }
