@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ResponseCodeEnum {
+    // 공용 예외
+    UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+
     // 유저 관련 예외
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인 실패"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
@@ -17,9 +20,16 @@ public enum ResponseCodeEnum {
     SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호가 이전 비밀번호와 동일합니다."),
     INVALID_MANAGER_PASSWORD(HttpStatus.FORBIDDEN, "관리자 암호가 틀렸습니다."),
 
-    // 공용 예외
-    UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+    // 칼럼 관련 예외
+    COLUMN_NOT_FOUND(HttpStatus.NOT_FOUND, "칼럼을 찾을 수 없습니다"),
 
+    // 보드 관련 예외
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다"),
+
+    // 카드 관련 예외
+    CARD_NOT_FOUND(HttpStatus.NOT_FOUND, "카드를 찾을 수 없습니다"),
+
+    ;
     private final HttpStatus httpStatus;
     private final String message;
 }

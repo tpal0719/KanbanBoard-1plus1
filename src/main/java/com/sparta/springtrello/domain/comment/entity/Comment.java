@@ -4,6 +4,7 @@ import com.sparta.springtrello.common.Timestamped;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.card.entity.Card;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,8 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private String content;
 
     @Builder
