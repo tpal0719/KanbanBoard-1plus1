@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Columns;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,16 +33,15 @@ public class Board extends Timestamped {
 
 
     //컬럼
-    @OneToMany(mappedBy = "task_columns", orphanRemoval = true)
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
     private List<TaskColumn> taskColumns;
 
 
     @Builder
-    public Board(String boardName, String boardDescription, User user, TaskColumn taskColumn) {
+    public Board(String boardName, String boardDescription, User user) {
         this.boardName = boardName;
         this.boardDescription = boardDescription;
         this.user = user;
-        this.taskColumn = taskColumn;
     }
 
 

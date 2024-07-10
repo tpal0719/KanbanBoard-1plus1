@@ -67,7 +67,7 @@ public class User extends Timestamped {
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<BoardUser> userBoards = new ArrayList<>();
+    private final List<BoardUser> boardUsers = new ArrayList<>();
 
     @Builder
     public User(String username, String password, UserStatusEnum userStatus) {
