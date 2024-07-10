@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "columns")
+@Table(name = "task_columns")
 @NoArgsConstructor
-public class Column extends Timestamped {
+public class TaskColumn extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +25,7 @@ public class Column extends Timestamped {
     private int order;
 
     @Builder
-    public Column(Board board, String name, int order) {
+    public TaskColumn(Board board, String name, int order) {
         this.board = board;
         this.name = name;
         this.order = order;
