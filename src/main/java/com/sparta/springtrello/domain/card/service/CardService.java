@@ -117,4 +117,12 @@ public class CardService {
         cardAdapter.save(card);
         cardAdapter.saveAll(cards);
     }
+
+    // 카드 삭제
+    @Transactional
+    public void deleteCard(Long cardId) {
+        Card card = cardAdapter.findById(cardId);
+        cardAdapter.delete(card);
+    }
+
 }

@@ -65,4 +65,11 @@ public class CardController {
         cardService.updateCard(cardId, requestDto);
         return ResponseUtils.success(HttpStatus.OK);
     }
+
+    // 카드 삭제
+    @DeleteMapping("/{cardId}")
+    public ResponseEntity<HttpResponseDto<Void>> deleteCard(@PathVariable Long cardId) {
+        cardService.deleteCard(cardId);
+        return ResponseUtils.success(HttpStatus.OK);
+    }
 }

@@ -42,4 +42,8 @@ public class CardAdapter {
     public void saveAll(List<Card> cards) {
         cardRepository.saveAll(cards);
     }
+
+    public void delete(Card card) {
+        cardRepository.delete(card);
+    }
 }
