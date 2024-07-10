@@ -72,6 +72,7 @@ public class User extends Timestamped {
         this.username = username;
         this.password = password;
         this.userStatus = UserStatusEnum.STATUS_NORMAL;
+        this.userRole = UserRoleEnum.ROLE_USER;
     }
 
 }

@@ -2,6 +2,7 @@ package com.sparta.springtrello.exception;
 
 import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseUtils;
+import com.sparta.springtrello.exception.custom.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

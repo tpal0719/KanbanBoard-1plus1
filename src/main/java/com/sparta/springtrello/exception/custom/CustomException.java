@@ -1,4 +1,4 @@
-package com.sparta.springtrello.exception;
+package com.sparta.springtrello.exception.custom;
 
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import lombok.Getter;

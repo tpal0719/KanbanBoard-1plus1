@@ -5,10 +5,7 @@ import com.sparta.springtrello.auth.JwtProvider;
 import com.sparta.springtrello.auth.UserDetailsImpl;
 import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseUtils;
-import com.sparta.springtrello.domain.user.dto.ProfileResponseDto;
-import com.sparta.springtrello.domain.user.dto.SignupRequestDto;
-import com.sparta.springtrello.domain.user.dto.UpdatePasswordRequestDto;
-import com.sparta.springtrello.domain.user.dto.UpdateProfileRequestDto;
+import com.sparta.springtrello.domain.user.dto.*;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.service.KakaoService;
 import com.sparta.springtrello.domain.user.service.UserService;
@@ -50,7 +47,7 @@ public class UserController {
     // 프로필 업로드
     @PutMapping("/profile")
     public ResponseEntity<HttpResponseDto<Void>> updateProfile(
-            @Validated @RequestPart("updateProfileRequestDto") UpdateProfileRequestDto requestDto,
+            @Validated @RequestPart("updateProfileRequestDto") ProfileUpdateRequestDto requestDto,
             @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
@@ -62,7 +59,7 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<HttpResponseDto<Void>> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl loginUser,
-            @Validated @RequestBody UpdatePasswordRequestDto requestDto
+            @Validated @RequestBody PasswordUpdateRequestDto requestDto
     ) {
         userService.updatePassword(loginUser.getUser(), requestDto);
         return ResponseUtils.success(HttpStatus.OK);
@@ -83,12 +80,13 @@ public class UserController {
         return ResponseUtils.success(HttpStatus.OK);
     }
 
-    // 회원 탈퇴
-    @DeleteMapping("/withdraw")
-    public ResponseEntity<HttpResponseDto<Void>> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = userDetails.getUser();
-        userService.deleteUser(user);
-        SecurityContextHolder.clearContext();  // 보안 컨텍스트 초기화
+    // 회원탈퇴
+    @PutMapping("/withdraw")
+    public ResponseEntity<HttpResponseDto<Void>> deleteUser(
+            @AuthenticationPrincipal UserDetailsImpl loginUser,
+            @Validated @RequestBody AccountDeleteRequestDto requestDto
+    ) {
+        userService.deleteUser(loginUser.getUser(), requestDto);
         return ResponseUtils.success(HttpStatus.OK);
     }
 
