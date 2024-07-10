@@ -1,14 +1,13 @@
 package com.sparta.springtrello.domain.board.entity;
 
-
 import com.sparta.springtrello.common.Timestamped;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
-import com.sparta.springtrello.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Columns;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,26 +22,24 @@ public class Board extends Timestamped {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Column
     private String boardName;
 
+    @Column
     private String boardDescription;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private List<TaskColumn> taskColumns = new ArrayList<>();
 
-
-    //컬럼
-    @OneToMany(mappedBy = "board", orphanRemoval = true)
-    private List<TaskColumn> taskColumns;
-
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private List<BoardUser> boardUsers = new ArrayList<>();
 
     @Builder
-    public Board(String boardName, String boardDescription, User user) {
+    public Board(String boardName, String boardDescription) {
         this.boardName = boardName;
         this.boardDescription = boardDescription;
-        this.user = user;
     }
-
-
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,33 +24,39 @@ public class Card extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @NotNull
     @Column
     private String cardName;
 
+    @Setter
     @Column
     private String cardDescription;
 
-    @NotNull
+    @Setter
     @Column
     private LocalDateTime dueDate;
 
+    @Setter
     @NotNull
     @Column
     private Integer cardOrder;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_column", nullable = false)
-    private TaskColumn column;
+    private TaskColumn taskColumn;
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private List<CardUser> cardUsers = new ArrayList<>();
+
     @Builder
-    public Card(String cardName, String cardDescription, Integer cardOrder, TaskColumn column) {
+    public Card(String cardName, Integer cardOrder, TaskColumn taskColumn) {
         this.cardName = cardName;
-        this.cardDescription = cardDescription;
         this.cardOrder = cardOrder;
-        this.column = column;
+        this.taskColumn = taskColumn;
     }
 }
