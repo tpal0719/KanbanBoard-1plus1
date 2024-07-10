@@ -1,19 +1,17 @@
 package com.sparta.springtrello.domain.comment.entity;
 
 import com.sparta.springtrello.common.Timestamped;
-import com.sparta.springtrello.domain.card.entity.Card;
 import com.sparta.springtrello.domain.user.entity.User;
+import com.sparta.springtrello.domain.card.entity.Card;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.smartcardio.Card;
-
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name="comment")
+@Table(name="comments")
 public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

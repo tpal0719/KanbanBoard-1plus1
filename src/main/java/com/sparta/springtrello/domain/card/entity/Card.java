@@ -5,6 +5,7 @@ import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.comment.entity.Comment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,16 +35,17 @@ public class Card extends Timestamped {
     private LocalDateTime dueDate;
 
     @NotNull
-    @Column(name = "order_priority")
+    @Column
     private Integer cardOrder;
 
     @ManyToOne
-    @JoinColumn(name = "column_id", nullable = false)
+    @JoinColumn(name = "task_column", nullable = false)
     private TaskColumn column;
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
 
+    @Builder
     public Card(String cardName, String cardDescription, Integer cardOrder, TaskColumn column) {
         this.cardName = cardName;
         this.cardDescription = cardDescription;
