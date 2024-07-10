@@ -2,6 +2,8 @@ package com.sparta.springtrello.domain.card.repository;
 
 import com.sparta.springtrello.domain.card.entity.Card;
 import com.sparta.springtrello.domain.card.entity.CardUser;
+import com.sparta.springtrello.exception.custom.card.CardException;
+import com.sparta.springtrello.common.ResponseCodeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -30,10 +32,14 @@ public class CardAdapter {
     }
 
     public Card findById(Long cardId) {
-        return cardRepository.findById(cardId).orElseThrow(() -> new IllegalArgumentException("Card not found"));
+        return cardRepository.findById(cardId).orElseThrow(() -> new CardException(ResponseCodeEnum.CARD_NOT_FOUND));
     }
 
     public CardUser saveCardUser(CardUser cardUser) {
         return cardUserRepository.save(cardUser);
+    }
+
+    public void saveAll(List<Card> cards) {
+        cardRepository.saveAll(cards);
     }
 }

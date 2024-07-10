@@ -1,8 +1,8 @@
 package com.sparta.springtrello.domain.card.service;
 
-import com.sparta.springtrello.domain.card.dto.CardAssigneeRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardCreateRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardResponseDto;
+import com.sparta.springtrello.domain.card.dto.CardUpdateRequestDto;
 import com.sparta.springtrello.domain.card.entity.Card;
 import com.sparta.springtrello.domain.card.entity.CardUser;
 import com.sparta.springtrello.domain.card.repository.CardAdapter;
@@ -71,5 +71,50 @@ public class CardService {
                 .build();
 
         cardAdapter.saveCardUser(cardUser);
+    }
+
+    // 카드 상세 변경
+    @Transactional
+    public void updateCard(Long cardId, CardUpdateRequestDto requestDto) {
+        Card card = cardAdapter.findById(cardId);
+        if (requestDto.getCardName() != null) {
+            card.setCardName(requestDto.getCardName());
+        }
+        if (requestDto.getCardDescription() != null) {
+            card.setCardDescription(requestDto.getCardDescription());
+        }
+        if (requestDto.getDueDate() != null) {
+            card.setDueDate(requestDto.getDueDate());
+        }
+        if (requestDto.getCardOrder() != null) {
+            updateCardOrder(card, requestDto.getCardOrder());
+        }
+        cardAdapter.save(card);
+    }
+
+
+    // 카드 순서변경에 따른 업데이트 메서드
+    private void updateCardOrder(Card card, int newOrder) {
+        List<Card> cards = cardAdapter.findAllByColumnId(card.getTaskColumn().getId());
+
+        int oldOrder = card.getCardOrder();
+
+        if (oldOrder < newOrder) {
+            for (Card c : cards) {
+                if (c.getCardOrder() > oldOrder && c.getCardOrder() <= newOrder) {
+                    c.setCardOrder(c.getCardOrder() - 1);
+                }
+            }
+        } else if (oldOrder > newOrder) {
+            for (Card c : cards) {
+                if (c.getCardOrder() < oldOrder && c.getCardOrder() >= newOrder) {
+                    c.setCardOrder(c.getCardOrder() + 1);
+                }
+            }
+        }
+
+        card.setCardOrder(newOrder);
+        cardAdapter.save(card);
+        cardAdapter.saveAll(cards);
     }
 }

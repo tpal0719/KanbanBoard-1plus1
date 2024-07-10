@@ -24,6 +24,7 @@ public class Card extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @NotNull
     @Column
     private String cardName;
@@ -36,6 +37,7 @@ public class Card extends Timestamped {
     @Column
     private LocalDateTime dueDate;
 
+    @Setter
     @NotNull
     @Column
     private Integer cardOrder;

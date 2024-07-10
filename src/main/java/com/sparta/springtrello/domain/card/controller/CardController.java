@@ -2,9 +2,9 @@ package com.sparta.springtrello.domain.card.controller;
 
 import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseUtils;
-import com.sparta.springtrello.domain.card.dto.CardAssigneeRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardCreateRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardResponseDto;
+import com.sparta.springtrello.domain.card.dto.CardUpdateRequestDto;
 import com.sparta.springtrello.domain.card.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,6 +54,15 @@ public class CardController {
             @PathVariable Long cardId,
             @PathVariable Long userId) {
         cardService.addCardMember(cardId, userId);
+        return ResponseUtils.success(HttpStatus.OK);
+    }
+
+    // 카드 상세 수정
+    @PutMapping("/{cardId}")
+    public ResponseEntity<HttpResponseDto<Void>> updateCard(
+            @PathVariable Long cardId,
+            @RequestBody CardUpdateRequestDto requestDto) {
+        cardService.updateCard(cardId, requestDto);
         return ResponseUtils.success(HttpStatus.OK);
     }
 }
