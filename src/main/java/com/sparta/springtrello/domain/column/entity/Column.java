@@ -20,10 +20,8 @@ public class Column extends Timestamped {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
-    @jakarta.persistence.Column(name = "column_name", nullable = false, length = 255)
     private String name;
 
-    @jakarta.persistence.Column(name = "column_order", nullable = false)
     private int order;
 
     @Builder
