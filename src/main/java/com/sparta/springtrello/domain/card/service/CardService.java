@@ -86,14 +86,19 @@ public class CardService {
         if (requestDto.getDueDate() != null) {
             card.setDueDate(requestDto.getDueDate());
         }
-        if (requestDto.getCardOrder() != null) {
-            updateCardOrder(card, requestDto.getCardOrder());
-        }
         cardAdapter.save(card);
     }
 
+    // 카드 순서 변경
+    @Transactional
+    public void updateCardOrder(Long cardId, CardUpdateRequestDto requestDto) {
+        Card card = cardAdapter.findById(cardId);
+        if (requestDto.getCardOrder() != null) {
+            updateCardOrder(card, requestDto.getCardOrder());
+        }
+    }
 
-    // 카드 순서변경에 따른 업데이트 메서드
+    // 특정카드 순서 변경에따른 다른 카드 순서변경 메서드
     private void updateCardOrder(Card card, int newOrder) {
         List<Card> cards = cardAdapter.findAllByColumnId(card.getTaskColumn().getId());
 

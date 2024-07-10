@@ -66,6 +66,15 @@ public class CardController {
         return ResponseUtils.success(HttpStatus.OK);
     }
 
+    // 카드 순서 조정
+    @PutMapping("/{cardId}/order")
+    public ResponseEntity<HttpResponseDto<Void>> updateCardOrder(
+            @PathVariable Long cardId,
+            @RequestBody CardUpdateRequestDto requestDto) {
+        cardService.updateCardOrder(cardId, requestDto);
+        return ResponseUtils.success(HttpStatus.OK);
+    }
+
     // 카드 삭제
     @DeleteMapping("/{cardId}")
     public ResponseEntity<HttpResponseDto<Void>> deleteCard(@PathVariable Long cardId) {
