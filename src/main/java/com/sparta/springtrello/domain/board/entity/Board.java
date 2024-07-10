@@ -2,6 +2,7 @@ package com.sparta.springtrello.domain.board.entity;
 
 
 import com.sparta.springtrello.common.Timestamped;
+import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -29,16 +30,17 @@ public class Board extends Timestamped {
 
 
     //컬럼
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "task_column", nullable = false)
-//    private TaskColumn taskColumn;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_column", nullable = false)
+    private TaskColumn taskColumn;
 
 
     @Builder
-    public Board(String boardName, String boardDescription, User user) {
+    public Board(String boardName, String boardDescription, User user, TaskColumn taskColumn) {
         this.boardName = boardName;
         this.boardDescription = boardDescription;
         this.user = user;
+        this.taskColumn = taskColumn;
     }
 
 
