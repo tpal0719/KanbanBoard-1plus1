@@ -31,7 +31,7 @@ logging.level:
 #  org.springframework.web: debug
 
 jwt-secret-key: ${JWT-SECRET-KEY}
-manager-password: ${MANAGER-PASSWORD}
+admin-password: ${MANAGER-PASSWORD}
 
 cloud:
   aws:
