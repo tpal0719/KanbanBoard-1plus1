@@ -3,24 +3,47 @@ package com.sparta.springtrello.domain.card.controller;
 import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseUtils;
 import com.sparta.springtrello.domain.card.dto.CardCreateRequestDto;
+import com.sparta.springtrello.domain.card.dto.CardResponseDto;
 import com.sparta.springtrello.domain.card.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/cards")
 public class CardController {
+
     private final CardService cardService;
 
+    // 카드 생성
     @PostMapping("/columns/{columnId}")
-    public ResponseEntity<HttpResponseDto<Void>> createCard(
-            @PathVariable Long columnId,
-            @Validated @RequestBody CardCreateRequestDto requestDto) {
+    public ResponseEntity<HttpResponseDto<Void>> createCard(@PathVariable Long columnId, @RequestBody CardCreateRequestDto requestDto) {
         cardService.createCard(columnId, requestDto);
         return ResponseUtils.success(HttpStatus.CREATED);
+    }
+
+    // 카드 조회(보드별)
+    @GetMapping("/boards/{boardId}")
+    public ResponseEntity<HttpResponseDto<List<CardResponseDto>>> getCardsByBoardId(@PathVariable Long boardId) {
+        List<CardResponseDto> cards = cardService.getCardsByBoardId(boardId);
+        return ResponseUtils.success(HttpStatus.OK, cards);
+    }
+
+    // 카드 조회(칼럼별)
+    @GetMapping("/columns/{columnId}")
+    public ResponseEntity<HttpResponseDto<List<CardResponseDto>>> getCardsByColumnId(@PathVariable Long columnId) {
+        List<CardResponseDto> cards = cardService.getCardsByColumnId(columnId);
+        return ResponseUtils.success(HttpStatus.OK, cards);
+    }
+
+    // 카드 조회(유저별)
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<HttpResponseDto<List<CardResponseDto>>> getCardsByUserId(@PathVariable Long userId) {
+        List<CardResponseDto> cards = cardService.getCardsByUserId(userId);
+        return ResponseUtils.success(HttpStatus.OK, cards);
     }
 }
