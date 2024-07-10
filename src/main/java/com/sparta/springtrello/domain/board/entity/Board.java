@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Columns;
 
+import java.util.List;
+
 @Getter
 @Entity
 @NoArgsConstructor
@@ -30,9 +32,8 @@ public class Board extends Timestamped {
 
 
     //컬럼
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_column", nullable = false)
-    private TaskColumn taskColumn;
+    @OneToMany(mappedBy = "task_columns", orphanRemoval = true)
+    private List<TaskColumn> taskColumns;
 
 
     @Builder
