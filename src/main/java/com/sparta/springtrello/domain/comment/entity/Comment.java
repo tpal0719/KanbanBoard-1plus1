@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.smartcardio.Card;
+
 @Getter
 @Entity
 @NoArgsConstructor
