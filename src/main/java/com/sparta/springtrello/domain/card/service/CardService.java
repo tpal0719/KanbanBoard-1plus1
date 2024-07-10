@@ -1,11 +1,15 @@
 package com.sparta.springtrello.domain.card.service;
 
+import com.sparta.springtrello.domain.card.dto.CardAssigneeRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardCreateRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardResponseDto;
 import com.sparta.springtrello.domain.card.entity.Card;
+import com.sparta.springtrello.domain.card.entity.CardUser;
 import com.sparta.springtrello.domain.card.repository.CardAdapter;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.column.repository.TaskColumnAdapter;
+import com.sparta.springtrello.domain.user.entity.User;
+import com.sparta.springtrello.domain.user.repository.UserAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ public class CardService {
 
     private final CardAdapter cardAdapter;
     private final TaskColumnAdapter taskColumnAdapter;
+    private final UserAdapter userAdapter;
 
 
     // 카드 생성
@@ -52,5 +57,19 @@ public class CardService {
     public List<CardResponseDto> getCardsByUserId(Long userId) {
         List<Card> cards = cardAdapter.findAllByUserId(userId);
         return CardResponseDto.fromEntities(cards);
+    }
+
+    // 카드 작업자 할당
+    @Transactional
+    public void addCardMember(Long cardId, Long userId) {
+        Card card = cardAdapter.findById(cardId);
+        User user = userAdapter.findById(userId);
+
+        CardUser cardUser = CardUser.builder()
+                .user(user)
+                .card(card)
+                .build();
+
+        cardAdapter.saveCardUser(cardUser);
     }
 }

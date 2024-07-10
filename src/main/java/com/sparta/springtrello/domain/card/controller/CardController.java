@@ -2,6 +2,7 @@ package com.sparta.springtrello.domain.card.controller;
 
 import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseUtils;
+import com.sparta.springtrello.domain.card.dto.CardAssigneeRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardCreateRequestDto;
 import com.sparta.springtrello.domain.card.dto.CardResponseDto;
 import com.sparta.springtrello.domain.card.service.CardService;
@@ -45,5 +46,14 @@ public class CardController {
     public ResponseEntity<HttpResponseDto<List<CardResponseDto>>> getCardsByUserId(@PathVariable Long userId) {
         List<CardResponseDto> cards = cardService.getCardsByUserId(userId);
         return ResponseUtils.success(HttpStatus.OK, cards);
+    }
+
+    // 카드 작업자 할당
+    @PostMapping("/{cardId}/assign/{userId}")
+    public ResponseEntity<HttpResponseDto<Void>> addCardMember(
+            @PathVariable Long cardId,
+            @PathVariable Long userId) {
+        cardService.addCardMember(cardId, userId);
+        return ResponseUtils.success(HttpStatus.OK);
     }
 }
