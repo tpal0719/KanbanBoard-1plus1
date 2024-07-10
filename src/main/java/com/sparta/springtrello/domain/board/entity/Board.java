@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Columns;
+import org.springframework.scheduling.config.Task;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -28,19 +30,14 @@ public class Board extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-
-    //컬럼
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_column", nullable = false)
-    private TaskColumn taskColumn;
-
+    @OneToMany(mappedBy = "task_columns", orphanRemoval = true)
+    private List<TaskColumn> tasks;
 
     @Builder
-    public Board(String boardName, String boardDescription, User user, TaskColumn taskColumn) {
+    public Board(String boardName, String boardDescription, User user) {
         this.boardName = boardName;
         this.boardDescription = boardDescription;
         this.user = user;
-        this.taskColumn = taskColumn;
     }
 
 
