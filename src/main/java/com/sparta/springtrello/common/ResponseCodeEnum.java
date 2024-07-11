@@ -20,7 +20,6 @@ public enum ResponseCodeEnum {
     PASSWORD_INCORRECT(HttpStatus.UNAUTHORIZED, "비밀번호가 올바르지 않습니다"),
     SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호가 이전 비밀번호와 동일합니다."),
     INVALID_MANAGER_PASSWORD(HttpStatus.FORBIDDEN, "관리자 암호가 틀렸습니다."),
-    NOT_EQUAL_AUTHORITY(HttpStatus.UNAUTHORIZED,"접근 권한이 없습니다"),
 
     // 칼럼 관련 예외
     COLUMN_NOT_FOUND(HttpStatus.NOT_FOUND, "칼럼을 찾을 수 없습니다"),

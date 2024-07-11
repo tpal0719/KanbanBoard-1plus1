@@ -26,7 +26,7 @@ public class BoardService {
     public void createBoard(BoardCreateRequestDto requestDto,User user) {
 
         if(!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)){
-            throw new BoardException(ResponseCodeEnum.NOT_EQUAL_AUTHORITY);
+            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
         }
 
         Board board = Board.builder()
@@ -51,7 +51,7 @@ public class BoardService {
     @Transactional
     public void updateBoard(Long boardId,BoardCreateRequestDto requestDto, User user) {
         if(!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)){
-            throw new BoardException(ResponseCodeEnum.NOT_EQUAL_AUTHORITY);
+            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
         }
         Board board = boardAdapter.findById(boardId);
         if(board==null){
@@ -69,7 +69,7 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId, User user) {
         if(!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)){
-            throw new BoardException(ResponseCodeEnum.NOT_EQUAL_AUTHORITY);
+            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
         }
         Board board = boardAdapter.findById(boardId);
         if(board==null){
