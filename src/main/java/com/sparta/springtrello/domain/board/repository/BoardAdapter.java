@@ -23,7 +23,11 @@ public class BoardAdapter {
     }
 
     public List<Board> findAll() {
-        return boardRepository.findAll();
+        List<Board> boards = boardRepository.findAll();
+        if(boards.isEmpty()){
+            throw new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND);
+        }
+        return boards;
     }
 
     public void delete(Board board) {
