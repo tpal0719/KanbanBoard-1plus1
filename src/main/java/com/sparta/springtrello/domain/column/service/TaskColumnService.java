@@ -7,8 +7,11 @@ import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.column.repository.TaskColumnAdapter;
 import com.sparta.springtrello.domain.board.repository.BoardAdapter;
 import com.sparta.springtrello.domain.board.entity.Board;
+import com.sparta.springtrello.domain.user.entity.User;
+import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.exception.custom.column.ColumnException;
 import com.sparta.springtrello.common.ResponseCodeEnum;
+import com.sparta.springtrello.exception.custom.board.BoardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +30,11 @@ public class TaskColumnService {
     private final BoardAdapter boardAdapter;
 
     @Transactional
-    public void createTaskColumn(Long boardId, TaskColumnCreateRequestDto requestDto) {
+    public void createTaskColumn(Long boardId, TaskColumnCreateRequestDto requestDto, User user) {
+        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
+        }
+
         Board board = boardAdapter.findById(boardId);
         int columnOrder = board.getTaskColumns().size() + 1;
 
@@ -41,7 +48,11 @@ public class TaskColumnService {
     }
 
     @Transactional
-    public void updateTaskColumnOrder(Long boardId, TaskColumnUpdateOrderRequestDto requestDto) {
+    public void updateTaskColumnOrder(Long boardId, TaskColumnUpdateOrderRequestDto requestDto, User user) {
+        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
+        }
+
         Board board = boardAdapter.findById(boardId);
         List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
 
@@ -77,12 +88,15 @@ public class TaskColumnService {
     }
 
     @Transactional
-    public void deleteTaskColumn(Long columnId) {
+    public void deleteTaskColumn(Long columnId, User user) {
+        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
+        }
+
         TaskColumn taskColumn = taskColumnAdapter.findById(columnId);
         if (taskColumn == null) {
             throw new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND);
         }
         taskColumnAdapter.delete(taskColumn);
     }
-
 }
