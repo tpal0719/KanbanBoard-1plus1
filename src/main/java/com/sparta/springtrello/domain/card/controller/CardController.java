@@ -1,5 +1,6 @@
 package com.sparta.springtrello.domain.card.controller;
 
+import com.sparta.springtrello.auth.UserDetailsImpl;
 import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseUtils;
 import com.sparta.springtrello.domain.card.dto.CardCreateRequestDto;
@@ -9,6 +10,7 @@ import com.sparta.springtrello.domain.card.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +24,11 @@ public class CardController {
 
     // 카드 생성
     @PostMapping("/columns/{columnId}")
-    public ResponseEntity<HttpResponseDto<Void>> createCard(@PathVariable Long columnId, @RequestBody CardCreateRequestDto requestDto) {
-        cardService.createCard(columnId, requestDto);
+    public ResponseEntity<HttpResponseDto<Void>> createCard(
+            @PathVariable Long columnId,
+            @RequestBody CardCreateRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.createCard(columnId, requestDto, userDetails.getUser().getId());
         return ResponseUtils.success(HttpStatus.CREATED);
     }
 
@@ -61,8 +66,9 @@ public class CardController {
     @PutMapping("/{cardId}")
     public ResponseEntity<HttpResponseDto<Void>> updateCard(
             @PathVariable Long cardId,
-            @RequestBody CardUpdateRequestDto requestDto) {
-        cardService.updateCard(cardId, requestDto);
+            @RequestBody CardUpdateRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.updateCard(cardId, requestDto, userDetails.getUser().getId());
         return ResponseUtils.success(HttpStatus.OK);
     }
 
@@ -75,10 +81,13 @@ public class CardController {
         return ResponseUtils.success(HttpStatus.OK);
     }
 
+
     // 카드 삭제
     @DeleteMapping("/{cardId}")
-    public ResponseEntity<HttpResponseDto<Void>> deleteCard(@PathVariable Long cardId) {
-        cardService.deleteCard(cardId);
+    public ResponseEntity<HttpResponseDto<Void>> deleteCard(
+            @PathVariable Long cardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.deleteCard(cardId, userDetails.getUser().getId());
         return ResponseUtils.success(HttpStatus.OK);
     }
 }
