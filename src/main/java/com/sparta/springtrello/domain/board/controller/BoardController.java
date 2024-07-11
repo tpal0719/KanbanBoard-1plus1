@@ -55,6 +55,7 @@ public class BoardController {
         return ResponseUtils.success(HttpStatus.OK);
     }
 
+    // 보드 삭제
     @DeleteMapping("/{boardId}")
     public ResponseEntity<HttpResponseDto<Void>> deleteBoard(@PathVariable Long boardId,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -62,6 +63,7 @@ public class BoardController {
         return ResponseUtils.success(HttpStatus.OK);
     }
 
+    // 보드 초대
     @PostMapping("/{boardId}/users/{userId}")
     public ResponseEntity<HttpResponseDto<Void>> inviteUserInBoard(@PathVariable Long boardId,
                                                                    @PathVariable Long userId,

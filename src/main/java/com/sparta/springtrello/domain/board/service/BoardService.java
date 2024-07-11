@@ -102,6 +102,8 @@ public class BoardService {
     }
 
 
+    /* Utils */
+
     public void validateBoardManager(User user){
         if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
             throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
