@@ -8,10 +8,14 @@ import com.sparta.springtrello.domain.card.dto.CardResponseDto;
 import com.sparta.springtrello.domain.card.dto.CardUpdateRequestDto;
 import com.sparta.springtrello.domain.card.service.CardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +25,7 @@ import java.util.List;
 public class CardController {
 
     private final CardService cardService;
+
 
     // 카드 생성
     @PostMapping("/columns/{columnId}")
@@ -57,8 +62,9 @@ public class CardController {
     @PostMapping("/{cardId}/assign/{userId}")
     public ResponseEntity<HttpResponseDto<Void>> addCardMember(
             @PathVariable Long cardId,
-            @PathVariable Long userId) {
-        cardService.addCardMember(cardId, userId);
+            @PathVariable Long userId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.addCardMember(cardId, userId, userDetails.getUser().getId());
         return ResponseUtils.success(HttpStatus.OK);
     }
 
@@ -79,6 +85,40 @@ public class CardController {
             @RequestBody CardUpdateRequestDto requestDto) {
         cardService.updateCardOrder(cardId, requestDto);
         return ResponseUtils.success(HttpStatus.OK);
+    }
+
+
+    // 파일 업로드
+    @PostMapping("/{cardId}/files")
+    public ResponseEntity<HttpResponseDto<Void>> uploadFile(
+            @PathVariable Long cardId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "fileDescription", required = false) String fileDescription,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.uploadFileAttachment(cardId, file, fileDescription, userDetails.getUser().getId());
+        return ResponseUtils.success(HttpStatus.OK);
+    }
+
+    // 파일 삭제
+    @DeleteMapping("/files/{fileAttachmentId}")
+    public ResponseEntity<HttpResponseDto<Void>> deleteFile(
+            @PathVariable Long fileAttachmentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.deleteFileAttachment(fileAttachmentId, userDetails.getUser().getId());
+        return ResponseUtils.success(HttpStatus.OK);
+    }
+
+    // 파일 다운로드
+    @GetMapping("/files/{fileAttachmentId}/download")
+    public ResponseEntity<Resource> downloadFileAttachment(
+            @PathVariable Long fileAttachmentId) {
+        Resource resource = cardService.downloadFileAttachment(fileAttachmentId);
+        String contentType = "application/octet-stream";
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
 

@@ -2,20 +2,26 @@ package com.sparta.springtrello.domain.card.service;
 
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import com.sparta.springtrello.domain.card.dto.CardCreateRequestDto;
+import com.sparta.springtrello.common.S3Uploader;
 import com.sparta.springtrello.domain.card.dto.CardResponseDto;
 import com.sparta.springtrello.domain.card.dto.CardUpdateRequestDto;
 import com.sparta.springtrello.domain.card.entity.Card;
 import com.sparta.springtrello.domain.card.entity.CardUser;
+import com.sparta.springtrello.domain.card.entity.FileAttachment;
 import com.sparta.springtrello.domain.card.repository.CardAdapter;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.column.repository.TaskColumnAdapter;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.repository.UserAdapter;
 import com.sparta.springtrello.exception.custom.common.AccessDeniedException;
+import com.sparta.springtrello.exception.custom.common.UploadException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -25,6 +31,7 @@ public class CardService {
     private final CardAdapter cardAdapter;
     private final TaskColumnAdapter taskColumnAdapter;
     private final UserAdapter userAdapter;
+    private final S3Uploader s3Uploader;
 
     // 카드 생성
     @Transactional
@@ -73,8 +80,10 @@ public class CardService {
 
     // 카드 작업자 할당
     @Transactional
-    public void addCardMember(Long cardId, Long userId) {
+    public void addCardMember(Long cardId, Long userId, Long requesterId) {
         Card card = cardAdapter.findById(cardId);
+        validateCardOwner(card, requesterId);  // 카드 작성자 권한 확인
+
         User user = userAdapter.findById(userId);
 
         CardUser cardUser = CardUser.builder()
@@ -90,7 +99,7 @@ public class CardService {
     @Transactional
     public void updateCard(Long cardId, CardUpdateRequestDto requestDto, Long userId) {
         Card card = cardAdapter.findById(cardId);
-        validateCardOwner(card, userId);
+        validateCardOwner(card, userId); // 카드 작성자 권한 확인
 
         if (requestDto.getCardName() != null) {
             card.setCardName(requestDto.getCardName());
@@ -113,11 +122,56 @@ public class CardService {
         }
     }
 
+    // 파일 업로드
+    @Transactional
+    public void uploadFileAttachment(Long cardId, MultipartFile file, String fileDescription, Long userId) {
+        Card card = cardAdapter.findById(cardId);
+        validateCardOwner(card, userId);
+
+        try {
+            String fileUrl = s3Uploader.upload(file, "card-attachments");
+            FileAttachment fileAttachment = FileAttachment.builder()
+                    .fileUrl(fileUrl)
+                    .fileDescription(fileDescription)
+                    .card(card)
+                    .build();
+            cardAdapter.saveFileAttachment(fileAttachment);
+        } catch (IOException e) {
+            throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
+        }
+    }
+
+    // 파일 삭제
+    @Transactional
+    public void deleteFileAttachment(Long fileAttachmentId, Long userId) {
+        FileAttachment fileAttachment = cardAdapter.findFileAttachmentById(fileAttachmentId);
+        validateCardOwner(fileAttachment.getCard(), userId);
+
+        s3Uploader.delete(fileAttachment.getFileUrl());
+        cardAdapter.deleteFileAttachment(fileAttachment);
+    }
+
+    // 파일 다운로드
+    @Transactional(readOnly = true)
+    public Resource downloadFileAttachment(Long fileAttachmentId) {
+        FileAttachment fileAttachment = cardAdapter.findFileAttachmentById(fileAttachmentId);
+        String fileUrl = fileAttachment.getFileUrl();
+
+        if (!s3Uploader.doesObjectExist(fileUrl)) {
+            throw new UploadException(ResponseCodeEnum.FILE_NOT_FOUND);
+        }
+
+        try {
+            return s3Uploader.download(fileUrl);
+        } catch (IOException e) {
+            throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
+        }
+    }
     // 카드 삭제
     @Transactional
     public void deleteCard(Long cardId, Long userId) {
         Card card = cardAdapter.findById(cardId);
-        validateCardOwner(card, userId);
+        validateCardOwner(card, userId); // 작성자 권한 확인
         cardAdapter.delete(card);
     }
 
@@ -155,5 +209,4 @@ public class CardService {
             throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
         }
     }
-
 }

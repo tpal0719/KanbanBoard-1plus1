@@ -29,6 +29,7 @@ public enum ResponseCodeEnum {
 
     // 카드 관련 예외
     CARD_NOT_FOUND(HttpStatus.NOT_FOUND, "카드를 찾을 수 없습니다"),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "카드에 파일을 찾을 수 없습니다"),
 
     ;
     private final HttpStatus httpStatus;
