@@ -39,6 +39,7 @@ public class Board extends Timestamped {
     @Setter
     private List<BoardUser> boardUsers = new ArrayList<>();
 
+
     @Builder
     public Board(String boardName, String boardDescription) {
         this.boardName = boardName;
