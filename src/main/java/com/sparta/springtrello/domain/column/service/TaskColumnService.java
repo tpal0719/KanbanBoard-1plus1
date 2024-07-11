@@ -29,12 +29,7 @@ public class TaskColumnService {
     private final TaskColumnAdapter taskColumnAdapter;
     private final BoardAdapter boardAdapter;
 
-    private void checkManagerRole(User user) {
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
-        }
-    }
-
+    // 컬럼 생성
     @Transactional
     public void createTaskColumn(Long boardId, TaskColumnCreateRequestDto requestDto, User user) {
         checkManagerRole(user);
@@ -51,6 +46,7 @@ public class TaskColumnService {
         taskColumnAdapter.save(taskColumn);
     }
 
+    // 컬럼 순서 변경
     @Transactional
     public void updateTaskColumnOrder(Long boardId, TaskColumnUpdateOrderRequestDto requestDto, User user) {
         checkManagerRole(user);
@@ -80,6 +76,7 @@ public class TaskColumnService {
         taskColumnAdapter.saveAll(reorderedColumns);
     }
 
+    // 컬럼 조회
     @Transactional(readOnly = true)
     public List<TaskColumnResponseDto> getTaskColumns(Long boardId) {
         Board board = boardAdapter.findById(boardId);
@@ -89,6 +86,7 @@ public class TaskColumnService {
                 .collect(Collectors.toList());
     }
 
+    // 컬럼 삭제
     @Transactional
     public void deleteTaskColumn(Long columnId, User user) {
         checkManagerRole(user);
@@ -99,4 +97,11 @@ public class TaskColumnService {
         }
         taskColumnAdapter.delete(taskColumn);
     }
+
+    private void checkManagerRole(User user) {
+        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
+        }
+    }
+
 }
