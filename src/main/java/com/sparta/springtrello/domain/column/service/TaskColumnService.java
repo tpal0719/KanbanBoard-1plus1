@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -51,6 +52,8 @@ public class TaskColumnService {
         Map<Long, TaskColumn> columnMap = columns.stream()
                 .collect(Collectors.toMap(TaskColumn::getId, Function.identity()));
 
+        List<TaskColumn> reorderedColumns = new ArrayList<>();
+
         for (int i = 0; i < requestDto.getColumnIds().size(); i++) {
             Long columnId = requestDto.getColumnIds().get(i);
             TaskColumn column = columnMap.get(columnId);
@@ -58,15 +61,17 @@ public class TaskColumnService {
                 throw new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND);
             }
             column.setColumnOrder(i + 1);
+            reorderedColumns.add(column);
         }
 
-        taskColumnAdapter.saveAll(columns);
+        taskColumnAdapter.saveAll(reorderedColumns);
     }
 
     @Transactional(readOnly = true)
     public List<TaskColumnResponseDto> getTaskColumns(Long boardId) {
         Board board = boardAdapter.findById(boardId);
-        return board.getTaskColumns().stream()
+        List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
+        return columns.stream()
                 .map(TaskColumnResponseDto::new)
                 .collect(Collectors.toList());
     }
