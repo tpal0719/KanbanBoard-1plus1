@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -28,6 +29,7 @@ public class Comment extends Timestamped {
 
     @NotNull
     @Column
+    @Setter
     private String content;
 
     @Builder
