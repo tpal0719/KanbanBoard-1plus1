@@ -29,11 +29,15 @@ public class TaskColumnService {
     private final TaskColumnAdapter taskColumnAdapter;
     private final BoardAdapter boardAdapter;
 
-    @Transactional
-    public void createTaskColumn(Long boardId, TaskColumnCreateRequestDto requestDto, User user) {
+    private void checkManagerRole(User user) {
         if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
             throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
         }
+    }
+
+    @Transactional
+    public void createTaskColumn(Long boardId, TaskColumnCreateRequestDto requestDto, User user) {
+        checkManagerRole(user);
 
         Board board = boardAdapter.findById(boardId);
         int columnOrder = board.getTaskColumns().size() + 1;
@@ -49,9 +53,7 @@ public class TaskColumnService {
 
     @Transactional
     public void updateTaskColumnOrder(Long boardId, TaskColumnUpdateOrderRequestDto requestDto, User user) {
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
-        }
+        checkManagerRole(user);
 
         Board board = boardAdapter.findById(boardId);
         List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
@@ -89,9 +91,7 @@ public class TaskColumnService {
 
     @Transactional
     public void deleteTaskColumn(Long columnId, User user) {
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
-        }
+        checkManagerRole(user);
 
         TaskColumn taskColumn = taskColumnAdapter.findById(columnId);
         if (taskColumn == null) {
