@@ -21,13 +21,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/cards")
+@RequestMapping
 public class CardController {
 
     private final CardService cardService;
 
     // 카드 생성
-    @PostMapping("/columns/{columnId}")
+    @PostMapping("/columns/{columnId}/cards")
     public ResponseEntity<HttpResponseDto<Void>> createCard(
             @PathVariable Long columnId,
             @RequestBody CardCreateRequestDto requestDto,
@@ -38,28 +38,28 @@ public class CardController {
 
 
     // 카드 조회(보드별)
-    @GetMapping("/boards/{boardId}")
+    @GetMapping("/boards/{boardId}/cards")
     public ResponseEntity<HttpResponseDto<List<CardResponseDto>>> getCardsByBoardId(@PathVariable Long boardId) {
         List<CardResponseDto> cards = cardService.getCardsByBoardId(boardId);
         return ResponseUtils.success(HttpStatus.OK, cards);
     }
 
     // 카드 조회(칼럼별)
-    @GetMapping("/columns/{columnId}")
+    @GetMapping("/columns/{columnId}/cards")
     public ResponseEntity<HttpResponseDto<List<CardResponseDto>>> getCardsByColumnId(@PathVariable Long columnId) {
         List<CardResponseDto> cards = cardService.getCardsByColumnId(columnId);
         return ResponseUtils.success(HttpStatus.OK, cards);
     }
 
     // 카드 조회(유저별)
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users/{userId}/cards")
     public ResponseEntity<HttpResponseDto<List<CardResponseDto>>> getCardsByUserId(@PathVariable Long userId) {
         List<CardResponseDto> cards = cardService.getCardsByUserId(userId);
         return ResponseUtils.success(HttpStatus.OK, cards);
     }
 
     // 카드 작업자 할당
-    @PostMapping("/{cardId}/assign/{userId}")
+    @PostMapping("/cards/{cardId}/assign/{userId}")
     public ResponseEntity<HttpResponseDto<Void>> addCardMember(
             @PathVariable Long cardId,
             @PathVariable Long userId,
@@ -69,7 +69,7 @@ public class CardController {
     }
 
     // 카드 상세 수정
-    @PutMapping("/{cardId}")
+    @PutMapping("/cards/{cardId}")
     public ResponseEntity<HttpResponseDto<Void>> updateCard(
             @PathVariable Long cardId,
             @RequestBody CardUpdateRequestDto requestDto,
@@ -79,7 +79,7 @@ public class CardController {
     }
 
     // 카드 순서 조정
-    @PutMapping("/{cardId}/order")
+    @PutMapping("/cards/{cardId}/order")
     public ResponseEntity<HttpResponseDto<Void>> updateCardOrder(
             @PathVariable Long cardId,
             @RequestBody CardUpdateRequestDto requestDto) {
@@ -89,7 +89,7 @@ public class CardController {
 
 
     // 파일 업로드
-    @PostMapping("/{cardId}/files")
+    @PostMapping("/cards/{cardId}/files")
     public ResponseEntity<HttpResponseDto<Void>> uploadFile(
             @PathVariable Long cardId,
             @RequestParam("file") MultipartFile file,
@@ -100,7 +100,7 @@ public class CardController {
     }
 
     // 파일 삭제
-    @DeleteMapping("/files/{fileAttachmentId}")
+    @DeleteMapping("/cards/files/{fileAttachmentId}")
     public ResponseEntity<HttpResponseDto<Void>> deleteFile(
             @PathVariable Long fileAttachmentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -109,7 +109,7 @@ public class CardController {
     }
 
     // 파일 다운로드
-    @GetMapping("/files/{fileAttachmentId}/download")
+    @GetMapping("/cards/files/{fileAttachmentId}/download")
     public ResponseEntity<Resource> downloadFileAttachment(
             @PathVariable Long fileAttachmentId) {
         Resource resource = cardService.downloadFileAttachment(fileAttachmentId);
@@ -123,7 +123,7 @@ public class CardController {
 
 
     // 카드 삭제
-    @DeleteMapping("/{cardId}")
+    @DeleteMapping("/cards/{cardId}")
     public ResponseEntity<HttpResponseDto<Void>> deleteCard(
             @PathVariable Long cardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
