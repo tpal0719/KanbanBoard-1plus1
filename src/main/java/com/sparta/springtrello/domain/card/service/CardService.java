@@ -36,8 +36,9 @@ public class CardService {
     private final S3Uploader s3Uploader;
 
     // 카드 생성
+    // 카드 생성
     @Transactional
-    public CardResponseDto createCard(Long columnId, CardCreateRequestDto requestDto, Long userId) {
+    public void createCard(Long columnId, CardCreateRequestDto requestDto, Long userId) {
         TaskColumn taskColumn = taskColumnAdapter.findById(columnId);
         if (taskColumn == null) {
             throw new CardException(ResponseCodeEnum.COLUMN_NOT_FOUND);
@@ -65,7 +66,6 @@ public class CardService {
                 .build();
 
         cardAdapter.saveCardUser(cardUser);
-        return new CardResponseDto(card);
     }
 
     // 카드 조회(보드별)
