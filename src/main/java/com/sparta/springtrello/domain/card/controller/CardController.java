@@ -28,13 +28,14 @@ public class CardController {
 
     // 카드 생성
     @PostMapping("/columns/{columnId}")
-    public ResponseEntity<HttpResponseDto<CardResponseDto>> createCard(
+    public ResponseEntity<HttpResponseDto<Void>> createCard(
             @PathVariable Long columnId,
             @RequestBody CardCreateRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        CardResponseDto cardResponseDto = cardService.createCard(columnId, requestDto, userDetails.getUser().getId());
-        return ResponseUtils.success(HttpStatus.CREATED, cardResponseDto);
+        cardService.createCard(columnId, requestDto, userDetails.getUser().getId());
+        return ResponseUtils.success(HttpStatus.CREATED);
     }
+
 
     // 카드 조회(보드별)
     @GetMapping("/boards/{boardId}")
