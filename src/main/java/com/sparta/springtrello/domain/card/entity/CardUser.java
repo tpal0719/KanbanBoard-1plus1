@@ -23,9 +23,13 @@ public class CardUser {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
+    @Column(nullable = false)
+    private boolean isCreator;
+
     @Builder
-    public CardUser(User user, Card card) {
+    public CardUser(User user, Card card, boolean isCreator) {
         this.user = user;
         this.card = card;
+        this.isCreator = isCreator;
     }
 }

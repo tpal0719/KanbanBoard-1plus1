@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ResponseCodeEnum {
     // 공용 예외
     UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
 
     // 유저 관련 예외
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인 실패"),
