@@ -12,7 +12,9 @@ import com.sparta.springtrello.domain.card.repository.CardAdapter;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.column.repository.TaskColumnAdapter;
 import com.sparta.springtrello.domain.user.entity.User;
+import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.domain.user.repository.UserAdapter;
+import com.sparta.springtrello.exception.custom.card.CardException;
 import com.sparta.springtrello.exception.custom.common.AccessDeniedException;
 import com.sparta.springtrello.exception.custom.common.UploadException;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +37,16 @@ public class CardService {
 
     // 카드 생성
     @Transactional
-    public void createCard(Long columnId, CardCreateRequestDto requestDto, Long userId) {
+    public CardResponseDto createCard(Long columnId, CardCreateRequestDto requestDto, Long userId) {
         TaskColumn taskColumn = taskColumnAdapter.findById(columnId);
+        if (taskColumn == null) {
+            throw new CardException(ResponseCodeEnum.COLUMN_NOT_FOUND);
+        }
+
+        if (requestDto.getCardName() == null || requestDto.getCardName().isEmpty()) {
+            throw new CardException(ResponseCodeEnum.CARD_NOT_NAME);
+        }
+
         int cardOrder = taskColumn.getCards().size() + 1;
         User user = userAdapter.findById(userId);
 
@@ -55,6 +65,7 @@ public class CardService {
                 .build();
 
         cardAdapter.saveCardUser(cardUser);
+        return new CardResponseDto(card);
     }
 
     // 카드 조회(보드별)
@@ -82,7 +93,7 @@ public class CardService {
     @Transactional
     public void addCardMember(Long cardId, Long userId, Long requesterId) {
         Card card = cardAdapter.findById(cardId);
-        validateCardOwner(card, requesterId);  // 카드 작성자 권한 확인
+        validateCardOwnerOrManager(card, requesterId);  // 관리자 또는 카드 작성자 권한 확인
 
         User user = userAdapter.findById(userId);
 
@@ -99,7 +110,11 @@ public class CardService {
     @Transactional
     public void updateCard(Long cardId, CardUpdateRequestDto requestDto, Long userId) {
         Card card = cardAdapter.findById(cardId);
-        validateCardOwner(card, userId); // 카드 작성자 권한 확인
+        validateCardOwnerOrManager(card, userId); // 관리자 또는 카드 작성자 권한 확인
+
+        if (card.getTaskColumn() == null) {
+            throw new CardException(ResponseCodeEnum.COLUMN_NOT_FOUND);
+        }
 
         if (requestDto.getCardName() != null) {
             card.setCardName(requestDto.getCardName());
@@ -117,6 +132,10 @@ public class CardService {
     @Transactional
     public void updateCardOrder(Long cardId, CardUpdateRequestDto requestDto) {
         Card card = cardAdapter.findById(cardId);
+        if (card.getTaskColumn() == null) {
+            throw new CardException(ResponseCodeEnum.COLUMN_NOT_FOUND);
+        }
+
         if (requestDto.getCardOrder() != null) {
             updateCardOrder(card, requestDto.getCardOrder());
         }
@@ -126,7 +145,11 @@ public class CardService {
     @Transactional
     public void uploadFileAttachment(Long cardId, MultipartFile file, String fileDescription, Long userId) {
         Card card = cardAdapter.findById(cardId);
-        validateCardOwner(card, userId);
+        validateCardOwnerOrManager(card, userId);
+
+        if (card.getTaskColumn() == null) {
+            throw new CardException(ResponseCodeEnum.COLUMN_NOT_FOUND);
+        }
 
         try {
             String fileUrl = s3Uploader.upload(file, "card-attachments");
@@ -145,7 +168,7 @@ public class CardService {
     @Transactional
     public void deleteFileAttachment(Long fileAttachmentId, Long userId) {
         FileAttachment fileAttachment = cardAdapter.findFileAttachmentById(fileAttachmentId);
-        validateCardOwner(fileAttachment.getCard(), userId);
+        validateCardOwnerOrManager(fileAttachment.getCard(), userId);
 
         s3Uploader.delete(fileAttachment.getFileUrl());
         cardAdapter.deleteFileAttachment(fileAttachment);
@@ -167,15 +190,19 @@ public class CardService {
             throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
         }
     }
+
     // 카드 삭제
     @Transactional
     public void deleteCard(Long cardId, Long userId) {
         Card card = cardAdapter.findById(cardId);
-        validateCardOwner(card, userId); // 작성자 권한 확인
+        if (card == null) {
+            throw new CardException(ResponseCodeEnum.CARD_NOT_FOUND); // 이미 삭제된 카드 예외 처리
+        }
+        validateCardOwnerOrManager(card, userId); // 관리자 또는 작성자 권한 확인
         cardAdapter.delete(card);
     }
 
-    // 특정카드 순서 변경에따른 다른 카드 순서변경 메서드
+    // 특정 카드 순서 변경에 따른 다른 카드 순서변경 메서드
     private void updateCardOrder(Card card, int newOrder) {
         List<Card> cards = cardAdapter.findAllByColumnId(card.getTaskColumn().getId());
 
@@ -200,12 +227,15 @@ public class CardService {
         cardAdapter.saveAll(cards);
     }
 
-    // 카드 생성자 권한 확인 메서드
-    private void validateCardOwner(Card card, Long userId) {
+    // 카드 생성자 또는 관리자 권한 확인 메서드
+    private void validateCardOwnerOrManager(Card card, Long userId) {
+        User user = userAdapter.findById(userId);
+        boolean isManager = user.getUserRole() == UserRoleEnum.ROLE_MANAGER; // 매니저인지 확인
+
         boolean isCreator = card.getCardUsers().stream()
                 .anyMatch(cardUser -> cardUser.getUser().getId().equals(userId) && cardUser.isCreator());
 
-        if (!isCreator) {
+        if (!isCreator && !isManager) {
             throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
         }
     }
