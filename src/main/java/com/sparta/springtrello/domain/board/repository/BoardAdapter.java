@@ -6,6 +6,8 @@ import com.sparta.springtrello.common.ResponseCodeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class BoardAdapter {
@@ -18,5 +20,13 @@ public class BoardAdapter {
     public Board findById(Long id) {
         return boardRepository.findById(id)
                 .orElseThrow(() -> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
+    }
+
+    public List<Board> findAll() {
+        return boardRepository.findAll();
+    }
+
+    public void delete(Board board) {
+        boardRepository.delete(board);
     }
 }
