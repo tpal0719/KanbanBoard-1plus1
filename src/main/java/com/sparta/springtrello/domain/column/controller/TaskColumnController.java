@@ -6,6 +6,7 @@ import com.sparta.springtrello.common.ResponseUtils;
 import com.sparta.springtrello.domain.column.dto.TaskColumnCreateRequestDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnResponseDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnUpdateOrderRequestDto;
+import com.sparta.springtrello.domain.column.dto.TaskColumnUpdateRequestDto;
 import com.sparta.springtrello.domain.column.service.TaskColumnService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,13 +18,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/columns")
+@RequestMapping
 public class TaskColumnController {
 
     private final TaskColumnService taskColumnService;
 
     // 컬럼 생성
-    @PostMapping("/boards/{boardId}")
+    @PostMapping("/boards/{boardId}/columns")
     public ResponseEntity<HttpResponseDto<Void>> createTaskColumn(
             @PathVariable Long boardId,
             @RequestBody TaskColumnCreateRequestDto requestDto,
@@ -32,17 +33,37 @@ public class TaskColumnController {
         return ResponseUtils.success(HttpStatus.CREATED);
     }
 
-    // 컬럼 조회
-    @GetMapping("/boards/{boardId}")
+    // 컬럼 조회(전체)
+    @GetMapping("/boards/{boardId}/columns")
     public ResponseEntity<HttpResponseDto<List<TaskColumnResponseDto>>> getTaskColumns(
             @PathVariable Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<TaskColumnResponseDto> columns = taskColumnService.getTaskColumns(boardId);
+        List<TaskColumnResponseDto> columns = taskColumnService.getTaskColumns(boardId,userDetails.getUser());
         return ResponseUtils.success(HttpStatus.OK, columns);
     }
 
+    // 컬럼 조회(단건)
+    @GetMapping("/columns/{columnId}")
+    public ResponseEntity<HttpResponseDto<TaskColumnResponseDto>> getOneTaskColumn(
+            @PathVariable Long columnId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        TaskColumnResponseDto columns = taskColumnService.getOneTaskColumn(columnId,userDetails.getUser());
+        return ResponseUtils.success(HttpStatus.OK ,columns);
+    }
+
+    // 컬럼 수정
+    @PutMapping("/columns/{columnId}")
+    public ResponseEntity<HttpResponseDto<Void>> updateTaskColumn(
+            @PathVariable Long columnId,
+            @RequestBody TaskColumnUpdateRequestDto taskColumnUpdateRequestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        taskColumnService.updateTaskColumn(columnId, taskColumnUpdateRequestDto, userDetails.getUser());
+        return ResponseUtils.success(HttpStatus.OK);
+    }
+
+
     // 컬럼 순서 변경
-    @PutMapping("/boards/{boardId}/order")
+    @PutMapping("/boards/{boardId}/columns/order")
     public ResponseEntity<HttpResponseDto<Void>> updateTaskColumnOrder(
             @PathVariable Long boardId,
             @RequestBody TaskColumnUpdateOrderRequestDto requestDto,
@@ -52,7 +73,7 @@ public class TaskColumnController {
     }
 
     // 컬럼 삭제
-    @DeleteMapping("/{columnId}")
+    @DeleteMapping("/columns/{columnId}")
     public ResponseEntity<HttpResponseDto<Void>> deleteTaskColumn(
             @PathVariable Long columnId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
