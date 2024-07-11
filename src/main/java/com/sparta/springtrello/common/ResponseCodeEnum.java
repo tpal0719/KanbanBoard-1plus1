@@ -33,6 +33,9 @@ public enum ResponseCodeEnum {
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "카드에 파일을 찾을 수 없습니다"),
     CARD_NOT_NAME(HttpStatus.NOT_FOUND, "카드에 이름이 없습니다"),
 
+    // 댓글 관련 예외
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "카드를 찾을 수 없습니다"),
+
     ;
     private final HttpStatus httpStatus;
     private final String message;
