@@ -23,6 +23,7 @@ public enum ResponseCodeEnum {
 
     // 칼럼 관련 예외
     COLUMN_NOT_FOUND(HttpStatus.NOT_FOUND, "칼럼을 찾을 수 없습니다"),
+    INVALID_COLUMN_ORDER(HttpStatus.BAD_REQUEST, "잘못된 컬럼 순서입니다."),
 
     // 보드 관련 예외
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다"),

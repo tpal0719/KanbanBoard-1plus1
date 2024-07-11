@@ -27,11 +27,11 @@ public class TaskColumn extends Timestamped {
     private Board board;
 
     @NotNull
-    @Column
+    @Column(nullable = false)
     private String columnName;
 
     @NotNull
-    @Column
+    @Column(nullable = false)
     private int columnOrder;
 
     @OneToMany(mappedBy = "taskColumn", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -42,6 +42,10 @@ public class TaskColumn extends Timestamped {
     public TaskColumn(Board board, String columnName, int columnOrder) {
         this.board = board;
         this.columnName = columnName;
+        this.columnOrder = columnOrder;
+    }
+
+    public void setColumnOrder(int columnOrder) {
         this.columnOrder = columnOrder;
     }
 }
