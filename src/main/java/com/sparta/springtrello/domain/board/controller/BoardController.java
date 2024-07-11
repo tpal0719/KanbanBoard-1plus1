@@ -5,6 +5,7 @@ import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseUtils;
 import com.sparta.springtrello.domain.board.dto.BoardCreateRequestDto;
 import com.sparta.springtrello.domain.board.dto.BoardResponseDto;
+import com.sparta.springtrello.domain.board.dto.BoardUpdateRequestDto;
 import com.sparta.springtrello.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,7 @@ public class BoardController {
     // 보드수정
     @PutMapping("/{boardId}")
     public ResponseEntity<HttpResponseDto<Void>> updateBoard(@PathVariable Long boardId,
-                                                            @RequestBody BoardCreateRequestDto requestDto,
+                                                            @RequestBody BoardUpdateRequestDto requestDto,
                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardService.updateBoard(boardId,requestDto,userDetails.getUser());
         return ResponseUtils.success(HttpStatus.OK);

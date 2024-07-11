@@ -27,6 +27,8 @@ public enum ResponseCodeEnum {
 
     // 보드 관련 예외
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다"),
+    BOARD_INVITE_SELF_USER(HttpStatus.BAD_REQUEST,"본인을 초대할 수 없습니다."),
+
 
     // 카드 관련 예외
     CARD_NOT_FOUND(HttpStatus.NOT_FOUND, "카드를 찾을 수 없습니다"),

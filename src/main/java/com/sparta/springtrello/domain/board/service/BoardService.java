@@ -4,6 +4,7 @@ package com.sparta.springtrello.domain.board.service;
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import com.sparta.springtrello.domain.board.dto.BoardCreateRequestDto;
 import com.sparta.springtrello.domain.board.dto.BoardResponseDto;
+import com.sparta.springtrello.domain.board.dto.BoardUpdateRequestDto;
 import com.sparta.springtrello.domain.board.entity.Board;
 import com.sparta.springtrello.domain.board.entity.BoardUser;
 import com.sparta.springtrello.domain.board.repository.BoardAdapter;
@@ -30,9 +31,7 @@ public class BoardService {
     @Transactional
     public void createBoard(BoardCreateRequestDto requestDto, User user) {
 
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
-        }
+        validateBoardManager(user);
 
         Board board = Board.builder()
                 .boardName(requestDto.getBoardName())
@@ -56,16 +55,13 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardResponseDto getOneBoard(Long boardId) {
         Board board = boardAdapter.findById(boardId);
-
         return new BoardResponseDto(board);
     }
 
     // 보드 수정
     @Transactional
-    public void updateBoard(Long boardId, BoardCreateRequestDto requestDto, User user) {
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
-        }
+    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, User user) {
+        validateBoardManager(user);
         Board board = boardAdapter.findById(boardId);
         if (requestDto.getBoardName() != null) {
             board.setBoardName(requestDto.getBoardName());
@@ -78,9 +74,7 @@ public class BoardService {
     // 보드 삭제
     @Transactional
     public void deleteBoard(Long boardId, User user) {
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
-        }
+        validateBoardManager(user);
         Board board = boardAdapter.findById(boardId);
 
         boardAdapter.delete(board);
@@ -88,11 +82,14 @@ public class BoardService {
 
 
     // 보드에 사용자 초대
+    @Transactional
     public void inviteUserInBoard(Long boardId, Long userId, User user) {
 
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
+        validateBoardManager(user);
+        if(user.getId().equals(userId)){ //본인초대불가
+            throw  new BoardException(ResponseCodeEnum.BOARD_INVITE_SELF_USER);
         }
+
         Board board = boardAdapter.findById(boardId);
         User inviteUser = userAdapter.findById(userId);
 
@@ -102,6 +99,13 @@ public class BoardService {
                 .build();
 
         boardUserAdapter.save(boardUser);
+    }
+
+
+    public void validateBoardManager(User user){
+        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+            throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
+        }
     }
 
 }
