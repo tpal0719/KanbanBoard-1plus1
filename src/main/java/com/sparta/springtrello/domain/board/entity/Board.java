@@ -22,10 +22,12 @@ public class Board extends Timestamped {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @NotNull
     @Column
     private String boardName;
 
+    @Setter
     @Column
     private String boardDescription;
 
