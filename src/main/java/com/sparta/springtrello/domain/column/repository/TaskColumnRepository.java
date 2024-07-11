@@ -10,5 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface TaskColumnRepository extends JpaRepository<TaskColumn, Long> {
+    List<TaskColumn> findAllByBoardOrderByColumnOrder(Board board);
 
 }

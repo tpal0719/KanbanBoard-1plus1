@@ -23,8 +23,8 @@ public class TaskColumnAdapter {
                 .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
     }
 
-    public List<TaskColumn> findAllById(List<Long> ids) {
-        return taskColumnRepository.findAllById(ids);
+    public List<TaskColumn> findAllByBoardOrderByColumnOrder(Board board) {
+        return taskColumnRepository.findAllByBoardOrderByColumnOrder(board);
     }
 
     public List<TaskColumn> saveAll(List<TaskColumn> columns) {

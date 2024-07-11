@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,14 +40,23 @@ public class TaskColumnService {
     }
 
     @Transactional
-    public void updateTaskColumnOrder(TaskColumnUpdateOrderRequestDto requestDto) {
-        List<TaskColumn> columns = taskColumnAdapter.findAllById(requestDto.getColumnIds());
+    public void updateTaskColumnOrder(Long boardId, TaskColumnUpdateOrderRequestDto requestDto) {
+        Board board = boardAdapter.findById(boardId);
+        List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
+
         if (columns.size() != requestDto.getColumnIds().size()) {
-            throw new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND);
+            throw new ColumnException(ResponseCodeEnum.INVALID_COLUMN_ORDER);
         }
 
-        for (int i = 0; i < columns.size(); i++) {
-            TaskColumn column = columns.get(i);
+        Map<Long, TaskColumn> columnMap = columns.stream()
+                .collect(Collectors.toMap(TaskColumn::getId, Function.identity()));
+
+        for (int i = 0; i < requestDto.getColumnIds().size(); i++) {
+            Long columnId = requestDto.getColumnIds().get(i);
+            TaskColumn column = columnMap.get(columnId);
+            if (column == null) {
+                throw new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND);
+            }
             column.setColumnOrder(i + 1);
         }
 
@@ -59,6 +70,7 @@ public class TaskColumnService {
                 .map(TaskColumnResponseDto::new)
                 .collect(Collectors.toList());
     }
+
     @Transactional
     public void deleteTaskColumn(Long columnId) {
         TaskColumn taskColumn = taskColumnAdapter.findById(columnId);

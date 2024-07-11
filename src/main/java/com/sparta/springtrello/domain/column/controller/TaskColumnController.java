@@ -25,7 +25,9 @@ public class TaskColumnController {
 
     private final TaskColumnService taskColumnService;
 
-    /**컬럼 생성**/
+    /**
+     * 컬럼 생성
+     **/
     @PostMapping("/boards/{boardId}")
     public ResponseEntity<HttpResponseDto<Void>> createTaskColumn(
             @PathVariable Long boardId,
@@ -40,7 +42,9 @@ public class TaskColumnController {
         }
     }
 
-    /**컬럼 조회**/
+    /**
+     * 컬럼 조회
+     **/
     @GetMapping("/boards/{boardId}")
     public ResponseEntity<HttpResponseDto<List<TaskColumnResponseDto>>> getTaskColumns(
             @PathVariable Long boardId,
@@ -49,21 +53,25 @@ public class TaskColumnController {
         return ResponseUtils.success(HttpStatus.OK, columns);
     }
 
-    /**컬럼 순서 변경**/
-    @PutMapping("/order")
+    /**
+     * 컬럼 순서 변경
+     **/
+    @PutMapping("/boards/{boardId}/order")
     public ResponseEntity<HttpResponseDto<Void>> updateTaskColumnOrder(
+            @PathVariable Long boardId,
             @RequestBody TaskColumnUpdateOrderRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        if (user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
-            taskColumnService.updateTaskColumnOrder(requestDto);
-            return ResponseUtils.success(HttpStatus.OK);
-        } else {
+        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
             return ResponseUtils.error(ResponseCodeEnum.ACCESS_DENIED);
         }
+        taskColumnService.updateTaskColumnOrder(boardId, requestDto);
+        return ResponseUtils.success(HttpStatus.OK);
     }
 
-    /**컬럼 삭제**/
+    /**
+     * 컬럼 삭제
+     **/
     @DeleteMapping("/{columnId}")
     public ResponseEntity<HttpResponseDto<Void>> deleteTaskColumn(
             @PathVariable Long columnId,
