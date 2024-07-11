@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaskColumnCreateRequestDto {
-    @NotBlank(message = "칼럼이름은 필수 입력 값입니다.")
+    @NotBlank(message = "칼럼 이름은 필수 입력 값입니다.")
     private String columnName;
 }
