@@ -2,6 +2,7 @@ package com.sparta.springtrello.domain.card.repository;
 
 import com.sparta.springtrello.domain.card.entity.Card;
 import com.sparta.springtrello.domain.card.entity.CardUser;
+import com.sparta.springtrello.domain.card.entity.FileAttachment;
 import com.sparta.springtrello.exception.custom.card.CardException;
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 public class CardAdapter {
     private final CardRepository cardRepository;
     private final CardUserRepository cardUserRepository;
+    private final FileAttachmentRepository fileAttachmentRepository;
 
     public List<Card> findAllByBoardId(Long boardId) {
         return cardRepository.findAllByBoardId(boardId);
@@ -39,11 +41,23 @@ public class CardAdapter {
         return cardUserRepository.save(cardUser);
     }
 
-    public void saveAll(List<Card> cards) {
-        cardRepository.saveAll(cards);
+    public FileAttachment saveFileAttachment(FileAttachment fileAttachment) {
+        return fileAttachmentRepository.save(fileAttachment);
+    }
+
+    public FileAttachment findFileAttachmentById(Long fileAttachmentId) {
+        return fileAttachmentRepository.findById(fileAttachmentId).orElseThrow(() -> new CardException(ResponseCodeEnum.FILE_NOT_FOUND));
+    }
+
+    public void deleteFileAttachment(FileAttachment fileAttachment) {
+        fileAttachmentRepository.delete(fileAttachment);
     }
 
     public void delete(Card card) {
         cardRepository.delete(card);
+    }
+
+    public void saveAll(List<Card> cards) {
+        cardRepository.saveAll(cards);
     }
 }

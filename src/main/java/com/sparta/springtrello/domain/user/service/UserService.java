@@ -6,6 +6,7 @@ import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.domain.user.entity.UserStatusEnum;
 import com.sparta.springtrello.domain.user.repository.UserAdapter;
+import com.sparta.springtrello.exception.custom.common.UploadException;
 import com.sparta.springtrello.exception.custom.user.UserException;
 import com.sparta.springtrello.exception.custom.user.PasswordException;
 import com.sparta.springtrello.common.ResponseCodeEnum;
@@ -94,7 +95,7 @@ public class UserService {
                 String pictureUrl = s3Uploader.upload(profilePicture, "profile-pictures");
                 user.setPictureUrl(pictureUrl);
             } catch (IOException e) {
-                throw new UserException(ResponseCodeEnum.UPLOAD_FAILED);
+                throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
             }
         }
         userAdapter.save(user);
