@@ -2,7 +2,7 @@ package com.sparta.springtrello.domain.column.service;
 
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import com.sparta.springtrello.domain.board.entity.Board;
-import com.sparta.springtrello.domain.board.repository.BoardAdapter;
+import com.sparta.springtrello.domain.board.repository.BoardRepository;
 import com.sparta.springtrello.domain.column.dto.TaskColumnCreateRequestDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnResponseDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnUpdateRequestDto;
@@ -10,6 +10,7 @@ import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.column.repository.TaskColumnRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
+import com.sparta.springtrello.exception.custom.board.BoardException;
 import com.sparta.springtrello.exception.custom.column.ColumnException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,14 @@ import java.util.stream.Collectors;
 public class TaskColumnService {
 
     private final TaskColumnRepository taskColumnRepository;
-    private final BoardAdapter boardAdapter;
+    private final BoardRepository boardRepository;
 
     // 컬럼 생성
     @Transactional
     public void createTaskColumn(Long boardId, TaskColumnCreateRequestDto requestDto, User user) {
         validateColumnManager(user);
 
-        Board board = boardAdapter.findById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
         int columnOrder = board.getTaskColumns().size() + 1;
 
         TaskColumn taskColumn = TaskColumn.builder()
@@ -78,7 +79,7 @@ public class TaskColumnService {
     public List<TaskColumnResponseDto> getTaskColumns(Long boardId, User user) {
         isUserInBoard(user, boardId);
 
-        Board board = boardAdapter.findById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(()->new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
         List<TaskColumn> columns = taskColumnRepository.findAllByBoardOrderByColumnOrder(board);
         return columns.stream()
                 .map(TaskColumnResponseDto::new)
@@ -132,10 +133,12 @@ public class TaskColumnService {
         }
 
         // 초대된 유저인가?
-        Board board = boardAdapter.findById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
         for (var users : board.getBoardUsers()) {
             if (users.getUser().equals(user)) {
-                return;
+                if(users.isAccepted()){ //초대 수락한 사람만
+                    return;
+                }
             }
         }
 

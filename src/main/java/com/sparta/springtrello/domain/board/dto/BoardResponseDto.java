@@ -1,6 +1,7 @@
 package com.sparta.springtrello.domain.board.dto;
 
 import com.sparta.springtrello.domain.board.entity.Board;
+import com.sparta.springtrello.domain.board.entity.BoardUser;
 import lombok.Getter;
 
 
@@ -20,6 +21,7 @@ public class BoardResponseDto {
         this.boardDescription = board.getBoardDescription();
 
         this.boardMembers = board.getBoardUsers().stream()
+                .filter(BoardUser::isAccepted)
                 .map(boardUser -> boardUser.getUser().getUsername())
                 .collect(Collectors.toList());
     }

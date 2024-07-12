@@ -2,6 +2,7 @@ package com.sparta.springtrello.domain.card.entity;
 
 import com.sparta.springtrello.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,8 @@ public class CardUser {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private boolean isCreator;
 
     @Builder

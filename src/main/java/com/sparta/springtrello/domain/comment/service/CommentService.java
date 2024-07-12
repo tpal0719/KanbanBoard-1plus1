@@ -3,6 +3,7 @@ package com.sparta.springtrello.domain.comment.service;
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import com.sparta.springtrello.domain.card.entity.Card;
 import com.sparta.springtrello.domain.card.repository.CardAdapter;
+import com.sparta.springtrello.domain.card.repository.CardRepository;
 import com.sparta.springtrello.domain.comment.dto.CommentRequestDto;
 import com.sparta.springtrello.domain.comment.dto.CommentResponseDto;
 import com.sparta.springtrello.domain.comment.entity.Comment;
@@ -10,6 +11,7 @@ import com.sparta.springtrello.domain.comment.repository.CommentRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.exception.custom.Comment.CommentException;
+import com.sparta.springtrello.exception.custom.card.CardException;
 import com.sparta.springtrello.exception.custom.common.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,12 +23,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final CardAdapter cardAdapter;
+    private final CardRepository cardRepository;
 
 
     //댓글 생성
     public void createComment(Long cardId, CommentRequestDto requestDto,User user) {
-        Card card = cardAdapter.findById(cardId);
+        Card card = cardRepository.findById(cardId).orElseThrow(()->new CardException(ResponseCodeEnum.CARD_NOT_FOUND));
 
         Comment comment = Comment.builder()
                 .user(user)
