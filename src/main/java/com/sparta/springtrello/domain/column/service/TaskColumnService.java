@@ -136,7 +136,9 @@ public class TaskColumnService {
         Board board = boardRepository.findById(boardId).orElseThrow(()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
         for (var users : board.getBoardUsers()) {
             if (users.getUser().equals(user)) {
-                return;
+                if(users.isAccepted()){ //초대 수락한 사람만
+                    return;
+                }
             }
         }
 

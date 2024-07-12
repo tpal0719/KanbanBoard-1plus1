@@ -47,7 +47,6 @@ public class BoardService {
     // 보드 조회
     @Transactional(readOnly = true)
     public List<BoardResponseDto> getBoards(User user) {
-//        List<Board> boards = boardAdapter.findAllbyUserId(user.getId());
         List<Board> boards = boardRepository.findAll();
         if (boards.isEmpty()) {
             throw new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND);
