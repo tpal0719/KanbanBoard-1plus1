@@ -6,10 +6,10 @@ import com.sparta.springtrello.domain.card.repository.CardAdapter;
 import com.sparta.springtrello.domain.comment.dto.CommentRequestDto;
 import com.sparta.springtrello.domain.comment.dto.CommentResponseDto;
 import com.sparta.springtrello.domain.comment.entity.Comment;
-import com.sparta.springtrello.domain.comment.repository.CommentAdapter;
+import com.sparta.springtrello.domain.comment.repository.CommentRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
-import com.sparta.springtrello.domain.user.repository.UserAdapter;
+import com.sparta.springtrello.exception.custom.Comment.CommentException;
 import com.sparta.springtrello.exception.custom.common.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    private final CommentAdapter commentAdapter;
+    private final CommentRepository commentRepository;
     private final CardAdapter cardAdapter;
 
 
@@ -33,25 +33,27 @@ public class CommentService {
                 .card(card)
                 .content(requestDto.getContent())
                 .build();
-        commentAdapter.save(comment);
+        commentRepository.save(comment);
     }
 
     //카드별 댓글 조회
     public List<CommentResponseDto> getCommentsByCardId(Long cardId,User user) {
-        List<Comment> comments = commentAdapter.findAllByCardId(cardId);
+        List<Comment> comments = commentRepository.findAllByCardId(cardId);
         return CommentResponseDto.fromEntities(comments);
     }
 
     // 댓글 조회(단일)
     public CommentResponseDto getOneComment(Long commentId, User user) {
-        Comment comment = commentAdapter.findById(commentId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CommentException(ResponseCodeEnum.COMMENT_NOT_FOUND));;
         return new CommentResponseDto(comment);
     }
 
     //댓글 수정
     @Transactional
     public void updateComments(Long commentId, CommentRequestDto requestDto, User user) {
-        Comment comment = commentAdapter.findById(commentId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CommentException(ResponseCodeEnum.COMMENT_NOT_FOUND));;
         validateCommentWriterOrManager(comment.getUser().getId(), user);
 
         if (requestDto.getContent() != null) {
@@ -62,10 +64,11 @@ public class CommentService {
     //댓글 삭제
     @Transactional
     public void deleteComment(Long commentId, User user) {
-        Comment comment = commentAdapter.findById(commentId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CommentException(ResponseCodeEnum.COMMENT_NOT_FOUND));
         validateCommentWriterOrManager(comment.getUser().getId(), user);
 
-        commentAdapter.delete(comment);
+        commentRepository.delete(comment);
     }
 
 

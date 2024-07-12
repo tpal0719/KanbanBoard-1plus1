@@ -10,7 +10,7 @@ import com.sparta.springtrello.domain.card.entity.CardUser;
 import com.sparta.springtrello.domain.card.entity.FileAttachment;
 import com.sparta.springtrello.domain.card.repository.CardAdapter;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
-import com.sparta.springtrello.domain.column.repository.TaskColumnAdapter;
+import com.sparta.springtrello.domain.column.repository.TaskColumnRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.domain.user.repository.UserAdapter;
@@ -31,7 +31,7 @@ import java.util.List;
 public class CardService {
 
     private final CardAdapter cardAdapter;
-    private final TaskColumnAdapter taskColumnAdapter;
+    private final TaskColumnRepository taskColumnRepository;
     private final UserAdapter userAdapter;
     private final S3Uploader s3Uploader;
 
@@ -39,7 +39,8 @@ public class CardService {
     // 카드 생성
     @Transactional
     public void createCard(Long columnId, CardCreateRequestDto requestDto, Long userId) {
-        TaskColumn taskColumn = taskColumnAdapter.findById(columnId);
+        TaskColumn taskColumn = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new CardException(ResponseCodeEnum.CARD_NOT_FOUND));
         if (taskColumn == null) {
             throw new CardException(ResponseCodeEnum.COLUMN_NOT_FOUND);
         }
