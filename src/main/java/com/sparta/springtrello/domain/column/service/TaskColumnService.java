@@ -25,7 +25,6 @@ public class TaskColumnService {
 
     private final TaskColumnAdapter taskColumnAdapter;
     private final BoardAdapter boardAdapter;
-    private final BoardUserAdapter boardUserAdapter;
 
     // 컬럼 생성
     @Transactional
