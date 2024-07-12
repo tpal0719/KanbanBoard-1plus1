@@ -6,7 +6,6 @@ import com.sparta.springtrello.domain.board.repository.BoardAdapter;
 import com.sparta.springtrello.domain.board.repository.BoardUserAdapter;
 import com.sparta.springtrello.domain.column.dto.TaskColumnCreateRequestDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnResponseDto;
-import com.sparta.springtrello.domain.column.dto.TaskColumnUpdateOrderRequestDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnUpdateRequestDto;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.column.repository.TaskColumnAdapter;
@@ -17,10 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +25,6 @@ public class TaskColumnService {
 
     private final TaskColumnAdapter taskColumnAdapter;
     private final BoardAdapter boardAdapter;
-    private final BoardUserAdapter boardUserAdapter;
 
     // 컬럼 생성
     @Transactional
@@ -50,39 +45,38 @@ public class TaskColumnService {
 
     // 컬럼 순서 변경
     @Transactional
-    public void updateTaskColumnOrder(Long boardId, TaskColumnUpdateOrderRequestDto requestDto, User user) {
+    public void updateTaskColumnOrder(Long columnId, int newOrder, User user) {
         validateColumnManager(user);
 
-        Board board = boardAdapter.findById(boardId);
+        TaskColumn column = taskColumnAdapter.findById(columnId);
+        Board board = column.getBoard();
         List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
 
-        if (columns.size() != requestDto.getColumnIds().size()) {
-            throw new ColumnException(ResponseCodeEnum.INVALID_COLUMN_ORDER);
-        }
+        int oldOrder = column.getColumnOrder();
 
-        Map<Long, TaskColumn> columnMap = columns.stream()
-                .collect(Collectors.toMap(TaskColumn::getId, Function.identity()));
-
-        List<TaskColumn> reorderedColumns = new ArrayList<>();
-
-        for (int i = 0; i < requestDto.getColumnIds().size(); i++) {
-            Long columnId = requestDto.getColumnIds().get(i);
-            TaskColumn column = columnMap.get(columnId);
-            if (column == null) {
-                throw new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND);
+        if (oldOrder < newOrder) {
+            for (TaskColumn c : columns) {
+                if (c.getColumnOrder() > oldOrder && c.getColumnOrder() <= newOrder) {
+                    c.setColumnOrder(c.getColumnOrder() - 1);
+                }
             }
-            column.setColumnOrder(i + 1);
-            reorderedColumns.add(column);
+        } else if (oldOrder > newOrder) {
+            for (TaskColumn c : columns) {
+                if (c.getColumnOrder() < oldOrder && c.getColumnOrder() >= newOrder) {
+                    c.setColumnOrder(c.getColumnOrder() + 1);
+                }
+            }
         }
 
-        taskColumnAdapter.saveAll(reorderedColumns);
+        column.setColumnOrder(newOrder);
+        taskColumnAdapter.save(column);
+        taskColumnAdapter.saveAll(columns);
     }
 
     // 컬럼 조회 (전체)
     @Transactional(readOnly = true)
-    public List<TaskColumnResponseDto> getTaskColumns(Long boardId,User user) {
-
-        isUserInBoard(user,boardId);
+    public List<TaskColumnResponseDto> getTaskColumns(Long boardId, User user) {
+        isUserInBoard(user, boardId);
 
         Board board = boardAdapter.findById(boardId);
         List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
@@ -91,21 +85,18 @@ public class TaskColumnService {
                 .collect(Collectors.toList());
     }
 
-
     // 컬럼 조회 (단건)
     @Transactional(readOnly = true)
     public TaskColumnResponseDto getOneTaskColumn(Long columnId, User user) {
-
         TaskColumn column = taskColumnAdapter.findById(columnId);
-        isUserInBoard(user,column.getBoard().getId());
+        isUserInBoard(user, column.getBoard().getId());
 
         return new TaskColumnResponseDto(column);
     }
 
     //컬럼 수정
     @Transactional
-    public void updateTaskColumn(Long columnId,
-                                 TaskColumnUpdateRequestDto taskColumnUpdateRequestDto, User user) {
+    public void updateTaskColumn(Long columnId, TaskColumnUpdateRequestDto taskColumnUpdateRequestDto, User user) {
         validateColumnManager(user);
         TaskColumn column = taskColumnAdapter.findById(columnId);
         column.setColumnName(taskColumnUpdateRequestDto.getColumnName());
@@ -123,7 +114,6 @@ public class TaskColumnService {
         taskColumnAdapter.delete(taskColumn);
     }
 
-
     /* Utils */
 
     // 관리자인가?
@@ -135,7 +125,6 @@ public class TaskColumnService {
 
     // 보드에 소속된 유저인가? - 컬럼 조작은 초대된 유저 or 매니저만 할수 있음
     private void isUserInBoard(User user, Long boardId) {
-
         //매니저인가?
         if (user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
             return;
@@ -143,17 +132,13 @@ public class TaskColumnService {
 
         // 초대된 유저인가?
         Board board = boardAdapter.findById(boardId);
-        for (var users : board.getBoardUsers()){
-            if(users.getUser().equals(user)){
+        for (var users : board.getBoardUsers()) {
+            if (users.getUser().equals(user)) {
                 return;
             }
         }
-        
+
         //매니저도 초대된 유저도 아님
         throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
     }
-
-
-
-
 }

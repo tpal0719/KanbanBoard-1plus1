@@ -38,7 +38,7 @@ public class TaskColumnController {
     public ResponseEntity<HttpResponseDto<List<TaskColumnResponseDto>>> getTaskColumns(
             @PathVariable Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<TaskColumnResponseDto> columns = taskColumnService.getTaskColumns(boardId,userDetails.getUser());
+        List<TaskColumnResponseDto> columns = taskColumnService.getTaskColumns(boardId, userDetails.getUser());
         return ResponseUtils.success(HttpStatus.OK, columns);
     }
 
@@ -47,8 +47,8 @@ public class TaskColumnController {
     public ResponseEntity<HttpResponseDto<TaskColumnResponseDto>> getOneTaskColumn(
             @PathVariable Long columnId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        TaskColumnResponseDto columns = taskColumnService.getOneTaskColumn(columnId,userDetails.getUser());
-        return ResponseUtils.success(HttpStatus.OK ,columns);
+        TaskColumnResponseDto columns = taskColumnService.getOneTaskColumn(columnId, userDetails.getUser());
+        return ResponseUtils.success(HttpStatus.OK, columns);
     }
 
     // 컬럼 수정
@@ -56,19 +56,18 @@ public class TaskColumnController {
     public ResponseEntity<HttpResponseDto<Void>> updateTaskColumn(
             @PathVariable Long columnId,
             @RequestBody TaskColumnUpdateRequestDto taskColumnUpdateRequestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails){
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         taskColumnService.updateTaskColumn(columnId, taskColumnUpdateRequestDto, userDetails.getUser());
         return ResponseUtils.success(HttpStatus.OK);
     }
 
-
     // 컬럼 순서 변경
-    @PutMapping("/boards/{boardId}/columns/order")
+    @PutMapping("/columns/{columnId}/order")
     public ResponseEntity<HttpResponseDto<Void>> updateTaskColumnOrder(
-            @PathVariable Long boardId,
+            @PathVariable Long columnId,
             @RequestBody TaskColumnUpdateOrderRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        taskColumnService.updateTaskColumnOrder(boardId, requestDto, userDetails.getUser());
+        taskColumnService.updateTaskColumnOrder(columnId, requestDto.getColumnOrder(), userDetails.getUser());
         return ResponseUtils.success(HttpStatus.OK);
     }
 
