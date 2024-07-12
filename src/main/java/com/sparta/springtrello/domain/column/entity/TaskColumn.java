@@ -28,11 +28,11 @@ public class TaskColumn extends Timestamped {
 
     @Setter
     @NotNull
-    @Column(nullable = false)
+    @Column
     private String columnName;
 
     @NotNull
-    @Column(nullable = false)
+    @Column
     private int columnOrder;
 
     @OneToMany(mappedBy = "taskColumn", cascade = CascadeType.ALL, orphanRemoval = true)

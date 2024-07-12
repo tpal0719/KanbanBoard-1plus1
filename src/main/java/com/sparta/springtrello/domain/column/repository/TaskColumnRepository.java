@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface TaskColumnRepository extends JpaRepository<TaskColumn, Long> {
     List<TaskColumn> findAllByBoardOrderByColumnOrder(Board board);
-
 }
