@@ -2,7 +2,6 @@ package com.sparta.springtrello.domain.comment.service;
 
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import com.sparta.springtrello.domain.card.entity.Card;
-import com.sparta.springtrello.domain.card.repository.CardAdapter;
 import com.sparta.springtrello.domain.comment.dto.CommentRequestDto;
 import com.sparta.springtrello.domain.comment.dto.CommentResponseDto;
 import com.sparta.springtrello.domain.comment.entity.Comment;

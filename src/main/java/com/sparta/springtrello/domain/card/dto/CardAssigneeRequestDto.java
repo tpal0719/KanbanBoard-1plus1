@@ -1,5 +1,6 @@
 package com.sparta.springtrello.domain.card.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,9 +9,9 @@ import lombok.Setter;
 @Setter
 public class CardAssigneeRequestDto {
 
-    @NotNull
+    @NotBlank
     private Long cardId;
 
-    @NotNull
+    @NotBlank
     private Long userId;
 }
