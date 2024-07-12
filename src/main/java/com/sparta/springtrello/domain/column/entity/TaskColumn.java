@@ -26,6 +26,7 @@ public class TaskColumn extends Timestamped {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
+    @Setter
     @NotNull
     @Column(nullable = false)
     private String columnName;
