@@ -7,12 +7,14 @@ import com.sparta.springtrello.domain.board.dto.BoardResponseDto;
 import com.sparta.springtrello.domain.board.dto.BoardUpdateRequestDto;
 import com.sparta.springtrello.domain.board.entity.Board;
 import com.sparta.springtrello.domain.board.entity.BoardUser;
-import com.sparta.springtrello.domain.board.repository.BoardAdapter;
-import com.sparta.springtrello.domain.board.repository.BoardUserAdapter;
+import com.sparta.springtrello.domain.board.repository.BoardRepository;
+import com.sparta.springtrello.domain.board.repository.BoardUserRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.domain.user.repository.UserAdapter;
+import com.sparta.springtrello.domain.user.repository.UserRepository;
 import com.sparta.springtrello.exception.custom.board.BoardException;
+import com.sparta.springtrello.exception.custom.user.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +26,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final BoardAdapter boardAdapter;
-    private final UserAdapter userAdapter;
-    private final BoardUserAdapter boardUserAdapter;
+    private final BoardRepository boardRepository;
+    private final BoardUserRepository boardUserRepository;
+    private final UserRepository userRepository;
+
 
     @Transactional
     public void createBoard(BoardCreateRequestDto requestDto, User user) {
@@ -38,14 +41,14 @@ public class BoardService {
                 .boardDescription(requestDto.getBoardDescription())
                 .build();
 
-        boardAdapter.save(board);
+        boardRepository.save(board);
     }
 
     // 보드 조회
     @Transactional(readOnly = true)
     public List<BoardResponseDto> getBoards(User user) {
 //        List<Board> boards = boardAdapter.findAllbyUserId(user.getId());
-        List<Board> boards = boardAdapter.findAll();
+        List<Board> boards = boardRepository.findAll();
         if (boards.isEmpty()) {
             throw new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND);
         }
@@ -54,7 +57,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public BoardResponseDto getOneBoard(Long boardId) {
-        Board board = boardAdapter.findById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
         return new BoardResponseDto(board);
     }
 
@@ -62,7 +65,7 @@ public class BoardService {
     @Transactional
     public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, User user) {
         validateBoardManager(user);
-        Board board = boardAdapter.findById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
         if (requestDto.getBoardName() != null) {
             board.setBoardName(requestDto.getBoardName());
         }
@@ -75,9 +78,9 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId, User user) {
         validateBoardManager(user);
-        Board board = boardAdapter.findById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
 
-        boardAdapter.delete(board);
+        boardRepository.delete(board);
     }
 
 
@@ -90,15 +93,15 @@ public class BoardService {
             throw  new BoardException(ResponseCodeEnum.BOARD_INVITE_SELF_USER);
         }
 
-        Board board = boardAdapter.findById(boardId);
-        User inviteUser = userAdapter.findById(userId);
+        Board board = boardRepository.findById(boardId).orElseThrow(()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
+        User inviteUser = userRepository.findById(userId).orElseThrow(()-> new UserException(ResponseCodeEnum.USER_NOT_FOUND));
 
         BoardUser boardUser = BoardUser.builder()
                 .board(board)
                 .user(inviteUser)
                 .build();
 
-        boardUserAdapter.save(boardUser);
+        boardUserRepository.save(boardUser);
     }
 
 

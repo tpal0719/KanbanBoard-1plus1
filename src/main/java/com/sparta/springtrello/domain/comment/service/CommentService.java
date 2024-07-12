@@ -9,7 +9,6 @@ import com.sparta.springtrello.domain.comment.entity.Comment;
 import com.sparta.springtrello.domain.comment.repository.CommentAdapter;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
-import com.sparta.springtrello.domain.user.repository.UserAdapter;
 import com.sparta.springtrello.exception.custom.common.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
