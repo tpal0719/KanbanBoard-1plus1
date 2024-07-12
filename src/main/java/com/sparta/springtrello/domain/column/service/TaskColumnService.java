@@ -3,12 +3,11 @@ package com.sparta.springtrello.domain.column.service;
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import com.sparta.springtrello.domain.board.entity.Board;
 import com.sparta.springtrello.domain.board.repository.BoardAdapter;
-import com.sparta.springtrello.domain.board.repository.BoardUserAdapter;
 import com.sparta.springtrello.domain.column.dto.TaskColumnCreateRequestDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnResponseDto;
 import com.sparta.springtrello.domain.column.dto.TaskColumnUpdateRequestDto;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
-import com.sparta.springtrello.domain.column.repository.TaskColumnAdapter;
+import com.sparta.springtrello.domain.column.repository.TaskColumnRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.exception.custom.column.ColumnException;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TaskColumnService {
 
-    private final TaskColumnAdapter taskColumnAdapter;
+    private final TaskColumnRepository taskColumnRepository;
     private final BoardAdapter boardAdapter;
 
     // 컬럼 생성
@@ -40,7 +39,7 @@ public class TaskColumnService {
                 .columnOrder(columnOrder)
                 .build();
 
-        taskColumnAdapter.save(taskColumn);
+        taskColumnRepository.save(taskColumn);
     }
 
     // 컬럼 순서 변경
@@ -48,9 +47,10 @@ public class TaskColumnService {
     public void updateTaskColumnOrder(Long columnId, int newOrder, User user) {
         validateColumnManager(user);
 
-        TaskColumn column = taskColumnAdapter.findById(columnId);
+        TaskColumn column = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
         Board board = column.getBoard();
-        List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
+        List<TaskColumn> columns = taskColumnRepository.findAllByBoardOrderByColumnOrder(board);
 
         int oldOrder = column.getColumnOrder();
 
@@ -69,8 +69,8 @@ public class TaskColumnService {
         }
 
         column.setColumnOrder(newOrder);
-        taskColumnAdapter.save(column);
-        taskColumnAdapter.saveAll(columns);
+        taskColumnRepository.save(column);
+        taskColumnRepository.saveAll(columns);
     }
 
     // 컬럼 조회 (전체)
@@ -79,7 +79,7 @@ public class TaskColumnService {
         isUserInBoard(user, boardId);
 
         Board board = boardAdapter.findById(boardId);
-        List<TaskColumn> columns = taskColumnAdapter.findAllByBoardOrderByColumnOrder(board);
+        List<TaskColumn> columns = taskColumnRepository.findAllByBoardOrderByColumnOrder(board);
         return columns.stream()
                 .map(TaskColumnResponseDto::new)
                 .collect(Collectors.toList());
@@ -88,7 +88,8 @@ public class TaskColumnService {
     // 컬럼 조회 (단건)
     @Transactional(readOnly = true)
     public TaskColumnResponseDto getOneTaskColumn(Long columnId, User user) {
-        TaskColumn column = taskColumnAdapter.findById(columnId);
+        TaskColumn column = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
         isUserInBoard(user, column.getBoard().getId());
 
         return new TaskColumnResponseDto(column);
@@ -98,8 +99,10 @@ public class TaskColumnService {
     @Transactional
     public void updateTaskColumn(Long columnId, TaskColumnUpdateRequestDto taskColumnUpdateRequestDto, User user) {
         validateColumnManager(user);
-        TaskColumn column = taskColumnAdapter.findById(columnId);
+        TaskColumn column = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
         column.setColumnName(taskColumnUpdateRequestDto.getColumnName());
+        taskColumnRepository.save(column);
     }
 
     // 컬럼 삭제
@@ -107,11 +110,9 @@ public class TaskColumnService {
     public void deleteTaskColumn(Long columnId, User user) {
         validateColumnManager(user);
 
-        TaskColumn taskColumn = taskColumnAdapter.findById(columnId);
-        if (taskColumn == null) {
-            throw new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND);
-        }
-        taskColumnAdapter.delete(taskColumn);
+        TaskColumn taskColumn = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
+        taskColumnRepository.delete(taskColumn);
     }
 
     /* Utils */
