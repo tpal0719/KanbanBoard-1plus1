@@ -104,6 +104,20 @@ public class BoardService {
         boardUserRepository.save(boardUser);
     }
 
+    // 보드에 사용자 수락
+    @Transactional
+    public void inviteUserInBoardAccept(Long boardId,User user){
+        BoardUser boardUser = boardUserRepository.findByBoardIdAndUserId(boardId,user.getId()).orElseThrow(
+                ()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
+
+        if(boardUser.isAccepted()){
+            throw new BoardException(ResponseCodeEnum.BOARD_INVITE_ACCEPT);
+        }
+        else{
+            boardUser.setAccepted(true);
+        }
+    }
+
 
     /* Utils */
 

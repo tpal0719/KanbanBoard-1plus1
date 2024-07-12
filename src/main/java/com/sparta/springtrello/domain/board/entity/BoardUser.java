@@ -1,6 +1,7 @@
 package com.sparta.springtrello.domain.board.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,9 @@ public class BoardUser {
     private Board board;
 
     @Setter
-    @Column(nullable = false)
+    @Getter
+    @NotNull
+    @Column
     private boolean accepted;
 
     @Builder

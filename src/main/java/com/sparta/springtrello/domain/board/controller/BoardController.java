@@ -73,4 +73,13 @@ public class BoardController {
     }
 
 
+    // 보드 초대 수락
+    @PutMapping("/{boardId}/accept-invite")
+    public ResponseEntity<HttpResponseDto<Void>> inviteUserInBoard(@PathVariable Long boardId,
+                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails){
+        boardService.inviteUserInBoardAccept(boardId,userDetails.getUser());
+        return ResponseUtils.success(HttpStatus.OK);
+    }
+
+
 }
