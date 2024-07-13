@@ -49,7 +49,7 @@ public class Card extends Timestamped {
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "card_user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
     private List<CardUser> cardUsers = new ArrayList<>();
 
