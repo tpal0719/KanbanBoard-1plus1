@@ -23,9 +23,11 @@ public class Checklist extends Timestamped {
     private Long id;
 
     @NotNull
+    @Setter
     private String checklistName;
 
-    private float percent_complete;
+    @Setter
+    private float percentComplete;
 
 
     @OneToMany(mappedBy = "checklistItem", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,7 +41,7 @@ public class Checklist extends Timestamped {
     @Builder
     public Checklist(String checklistName, float percent_complete, Card card) {
         this.checklistName = checklistName;
-        this.percent_complete = percent_complete;
+        this.percentComplete = percent_complete;
         this.card = card;
     }
 

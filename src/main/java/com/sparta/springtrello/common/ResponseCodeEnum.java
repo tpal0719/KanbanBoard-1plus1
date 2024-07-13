@@ -39,6 +39,9 @@ public enum ResponseCodeEnum {
     // 댓글 관련 예외
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다"),
 
+    //체크리스트 관련 예외
+    CHECKLIST_NOT_FOUND(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다"),
+
     ;
     private final HttpStatus httpStatus;
     private final String message;

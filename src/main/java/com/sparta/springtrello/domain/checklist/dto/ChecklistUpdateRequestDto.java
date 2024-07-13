@@ -6,6 +6,5 @@ import lombok.Getter;
 public class ChecklistUpdateRequestDto {
 
     private String checklistName;
-    private boolean isCompleted;
 
 }
