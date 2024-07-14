@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
@@ -18,7 +19,11 @@ public class ChecklistItem extends Timestamped {
     private Long id;
 
     @NotNull
-    private String item_name;
+    @Setter
+    private String itemName;
+
+    @NotNull
+    @Setter
     private boolean isCompleted;
 
 
@@ -28,10 +33,14 @@ public class ChecklistItem extends Timestamped {
 
 
     @Builder
-    public ChecklistItem(String item_name, boolean isCompleted, Checklist checklist) {
-        this.item_name = item_name;
+    public ChecklistItem(String itemName, boolean isCompleted, Checklist checklist) {
+        this.itemName = itemName;
         this.isCompleted = isCompleted;
         this.checklist = checklist;
+    }
+
+    public void switchCompleted(){
+        this.isCompleted = !this.isCompleted;
     }
 
 }

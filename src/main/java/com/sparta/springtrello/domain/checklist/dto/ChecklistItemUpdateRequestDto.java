@@ -1,11 +1,11 @@
 package com.sparta.springtrello.domain.checklist.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
 public class ChecklistItemUpdateRequestDto {
 
-    private String item_name;
-    private boolean isCompleted;
-
+    @NotBlank(message = "변경할 내용을 입력하세요.")
+    private String itemName;
 }

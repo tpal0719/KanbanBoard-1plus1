@@ -25,6 +25,11 @@ public class BoardUser {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
+
+    @NotNull
+    @Column
+    private boolean isCreator;
+
     @Setter
     @Getter
     @NotNull
@@ -32,9 +37,10 @@ public class BoardUser {
     private boolean accepted;
 
     @Builder
-    public BoardUser(User user, Board board, boolean accepted) {
+    public BoardUser(User user, Board board, boolean isCreator, boolean accepted) {
         this.user = user;
         this.board = board;
+        this.isCreator = isCreator;
         this.accepted = accepted;
     }
 }

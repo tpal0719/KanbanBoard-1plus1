@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 public class ChecklistItemResponseDto {
 
-    private String item_name;
+    private String itemName;
     private boolean isCompleted;
 
     public ChecklistItemResponseDto(ChecklistItem checklistItem) {
-        this.item_name = checklistItem.getItem_name();
+        this.itemName = checklistItem.getItemName();
         this.isCompleted = checklistItem.isCompleted();
     }
 }

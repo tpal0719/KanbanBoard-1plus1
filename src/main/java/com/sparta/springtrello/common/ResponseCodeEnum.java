@@ -41,6 +41,7 @@ public enum ResponseCodeEnum {
 
     //체크리스트 관련 예외
     CHECKLIST_NOT_FOUND(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다"),
+    CHECKLISTITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 체크리스트 항목를 찾을 수 없습니다"),
 
     ;
     private final HttpStatus httpStatus;

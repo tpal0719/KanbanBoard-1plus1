@@ -7,6 +7,6 @@ import lombok.Getter;
 public class ChecklistItemCreateRequestDto {
 
     @NotBlank(message = "내용을 입력해주세요.")
-    private String item_name;
+    private String itemName;
 
 }

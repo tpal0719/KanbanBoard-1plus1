@@ -33,10 +33,11 @@ public class ChecklistService {
     public void createChecklist(Long cardId, ChecklistCreateRequestDto requestDto, User user) {
 
         Card card = getCard(cardId);
-        validateCommentWriterOrManager(card, user);
+        validateCardWriterOrManager(card.getId(), user);
 
         Checklist checklist = Checklist.builder()
                 .checklistName(requestDto.getChecklistName())
+                .card(card)
                 .build();
 
         checklistRepository.save(checklist);
@@ -49,7 +50,6 @@ public class ChecklistService {
     }
 
     public ChecklistResponseDto getOneChecklist(Long checklistId, User user) {
-
         Checklist checklist = getChecklist(checklistId);
         return new ChecklistResponseDto(checklist);
     }
@@ -57,7 +57,7 @@ public class ChecklistService {
     public void updateChecklist(Long checklistId, ChecklistUpdateRequestDto requestDto, User user) {
 
         Checklist checklist = getChecklist(checklistId);
-        validateCommentWriterOrManager(checklist.getCard(), user);
+        validateCardWriterOrManager(checklist.getCard().getId(), user);
 
         if (requestDto.getChecklistName() != null) {
             checklist.setChecklistName(requestDto.getChecklistName());
@@ -68,7 +68,7 @@ public class ChecklistService {
     public void deleteChecklist(Long checklistId, User user) {
 
         Checklist checklist = getChecklist(checklistId);
-        validateCommentWriterOrManager(checklist.getCard(), user);
+        validateCardWriterOrManager(checklist.getCard().getId(), user);
 
         checklistRepository.delete(checklist);
     }
@@ -87,23 +87,22 @@ public class ChecklistService {
     }
 
     //작성자 or 매니저 인가?
-    private void validateCommentWriterOrManager(Card card, User user) {
+    private void validateCardWriterOrManager(Long cardId, User user) {
+        Card card = getCard(cardId);
 
-        List<CardUser> cardUsers = card.getCardUsers();
-
-        //카드를 작성한 유저?
-        for (CardUser cardUser : cardUsers) {
-            if (cardUser.getUser().equals(user)) {
+        // 카드에 권한이 있는 유저?
+        for (CardUser cardUser : card.getCardUsers()) {
+            if(cardUser.getUser().equals(user)) {
                 return;
             }
         }
 
-        //매니저?
+        // 매니저?
         if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
             return;
         }
 
-        //작성자도 매니저도 아님
+        // 작성자도 매니저도 아님
         throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
     }
 
