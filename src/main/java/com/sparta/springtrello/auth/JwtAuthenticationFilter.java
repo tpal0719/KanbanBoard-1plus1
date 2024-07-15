@@ -85,6 +85,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = jwtProvider.createRefreshToken(username);
 
         response.addHeader(JwtProvider.AUTHORIZATION_HEADER, accessToken);
+        response.addHeader("Access-Control-Expose-Headers", JwtProvider.AUTHORIZATION_HEADER);
 
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
         user.setRefreshToken(refreshToken);
@@ -95,6 +96,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         ResponseEntity<HttpResponseDto<Void>> responseEntity = ResponseUtils.success(HttpStatus.OK);
         writeResponseBody(response, responseEntity);
     }
+
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {

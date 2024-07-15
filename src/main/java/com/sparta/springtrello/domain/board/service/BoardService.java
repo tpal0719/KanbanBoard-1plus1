@@ -9,6 +9,8 @@ import com.sparta.springtrello.domain.board.entity.Board;
 import com.sparta.springtrello.domain.board.entity.BoardUser;
 import com.sparta.springtrello.domain.board.repository.BoardRepository;
 import com.sparta.springtrello.domain.board.repository.BoardUserRepository;
+import com.sparta.springtrello.domain.column.entity.TaskColumn;
+import com.sparta.springtrello.domain.column.repository.TaskColumnRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
 import com.sparta.springtrello.domain.user.repository.UserRepository;
@@ -28,6 +30,8 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardUserRepository boardUserRepository;
     private final UserRepository userRepository;
+    private final TaskColumnRepository taskColumnRepository;
+
 
 
     @Transactional
@@ -41,6 +45,10 @@ public class BoardService {
                 .build();
 
         boardRepository.save(board);
+
+
+        // 기본 컬럼 추가
+        addDefaultColumns(board);
     }
 
     // 보드 조회
@@ -149,4 +157,16 @@ public class BoardService {
     }
 
 
+    private void addDefaultColumns(Board board) {
+        String[] defaultColumns = {"To Do", "Doing", "Done"};
+        int order = 1;
+        for (String columnName : defaultColumns) {
+            TaskColumn column = new TaskColumn(board, columnName, order++);
+            taskColumnRepository.save(column);
+        }
+    }
+
+
+
 }
+
