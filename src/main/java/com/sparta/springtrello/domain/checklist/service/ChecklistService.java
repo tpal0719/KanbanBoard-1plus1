@@ -20,6 +20,7 @@ import com.sparta.springtrello.exception.custom.column.ColumnException;
 import com.sparta.springtrello.exception.custom.common.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class ChecklistService {
     private final CardRepository cardRepository;
     private final ChecklistRepository checklistRepository;
 
+    @Transactional
     public void createChecklist(Long cardId, ChecklistCreateRequestDto requestDto, User user) {
 
         Card card = getCard(cardId);
@@ -43,6 +45,7 @@ public class ChecklistService {
         checklistRepository.save(checklist);
     }
 
+
     public List<ChecklistResponseDto> getChecklistsByCard(Long cardId, User user) {
 
         List<Checklist> checklists = checklistRepository.findAllByCardId(cardId);
@@ -54,6 +57,7 @@ public class ChecklistService {
         return new ChecklistResponseDto(checklist);
     }
 
+    @Transactional
     public void updateChecklist(Long checklistId, ChecklistUpdateRequestDto requestDto, User user) {
 
         Checklist checklist = getChecklist(checklistId);
@@ -65,6 +69,7 @@ public class ChecklistService {
 
     }
 
+    @Transactional
     public void deleteChecklist(Long checklistId, User user) {
 
         Checklist checklist = getChecklist(checklistId);

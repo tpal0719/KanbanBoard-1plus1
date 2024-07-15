@@ -10,6 +10,4 @@ public interface ChecklistRepository extends JpaRepository<Checklist, Long> {
 
     List<Checklist> findAllByCardId(Long cardId);
 
-    @Query("")
-    float percentCaculator(Long checklistId);
 }

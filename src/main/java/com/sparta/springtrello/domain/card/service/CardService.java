@@ -62,7 +62,6 @@ public class CardService {
                 .cardName(requestDto.getCardName())
                 .cardOrder(cardOrder)
                 .taskColumn(taskColumn)
-                .user(user)
                 .build();
 
         cardRepository.save(card);
