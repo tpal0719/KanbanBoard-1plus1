@@ -116,7 +116,7 @@ public class ChecklistService {
         }
 
         // 매니저?
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+        if (user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
             return;
         }
 

@@ -21,7 +21,6 @@ public class ChecklistItem extends Timestamped {
     @Setter
     private String itemName;
 
-    @NotNull
     @Setter
     private boolean isCompleted;
 
@@ -32,9 +31,8 @@ public class ChecklistItem extends Timestamped {
 
 
     @Builder
-    public ChecklistItem(String itemName, boolean isCompleted, Checklist checklist) {
+    public ChecklistItem(String itemName, Checklist checklist) {
         this.itemName = itemName;
-        this.isCompleted = isCompleted;
         this.checklist = checklist;
     }
 

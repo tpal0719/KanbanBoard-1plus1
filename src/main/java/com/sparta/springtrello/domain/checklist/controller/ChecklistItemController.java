@@ -19,7 +19,7 @@ public class ChecklistItemController {
     private final ChecklistItemService checklistItemService;
 
     // 체크리스트 항목 추가
-    @PostMapping("/checklist/{checklistId}")
+    @PostMapping("/checklists/{checklistId}/checklist-item")
     public ResponseEntity<HttpResponseDto<Void>> createChecklistItem(@PathVariable Long checklistId,
                                                                  @RequestBody ChecklistItemCreateRequestDto requestDto,
                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -44,7 +44,9 @@ public class ChecklistItemController {
         return ResponseUtils.success(HttpStatus.OK);
     }
 
+
     // 체크리스트 항목 수정 - 완료 토글
+    @PutMapping("/checklist-item/{checklistItemId}/toggle")
     public ResponseEntity<HttpResponseDto<Void>> toggleChecklistItem(@PathVariable Long checklistItemId,
                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         checklistItemService.toggleChecklistItem(checklistItemId,userDetails.getUser());

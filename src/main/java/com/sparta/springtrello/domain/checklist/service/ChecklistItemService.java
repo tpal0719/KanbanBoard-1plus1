@@ -29,6 +29,7 @@ public class ChecklistItemService {
         validateCardMemberOrManager(checklist.getId(),user);
         ChecklistItem checklistItem = ChecklistItem.builder()
                 .itemName(requestDto.getItemName())
+                .checklist(checklist)
                 .build();
 
         checklistItemRepository.save(checklistItem);
@@ -46,7 +47,7 @@ public class ChecklistItemService {
         ChecklistItem checklistItem = getChecklistItem(checklistItemId);
 
         validateCardMemberOrManager(checklistItem.getChecklist().getId(),user);
-        if(requestDto.getItemName().isBlank() || requestDto.getItemName().isEmpty()){
+        if(!requestDto.getItemName().isBlank() || !requestDto.getItemName().isEmpty()){
             checklistItem.setItemName(requestDto.getItemName());
         }
 
@@ -89,7 +90,7 @@ public class ChecklistItemService {
             }
         }
         // 매니저?
-        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+        if (user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
             return;
         }
 

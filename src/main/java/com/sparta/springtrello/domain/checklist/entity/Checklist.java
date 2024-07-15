@@ -26,19 +26,20 @@ public class Checklist extends Timestamped {
     @Setter
     private String checklistName;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_id", nullable = false)
+    private Card card;
 
     @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
     private List<ChecklistItem> checklistItems = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card_id", nullable = false)
-    private Card card;
 
     @Builder
     public Checklist(String checklistName, Card card) {
         this.checklistName = checklistName;
         this.card = card;
     }
+
 
 }
