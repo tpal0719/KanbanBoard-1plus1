@@ -118,6 +118,29 @@ public class BoardService {
     }
 
 
+    // 보드에 초대된 유저 삭제
+    @Transactional
+    public void deleteInviteUser(Long boardId,Long userId, User user) {
+
+        validateBoardManager(user);
+
+        BoardUser boardUser = boardUserRepository.findByBoardIdAndUserId(boardId,userId).orElseThrow(
+                ()-> new BoardException(ResponseCodeEnum.BOARD_NOT_FOUND));
+
+        if(boardUser.getUser().getId().equals(user.getId())){
+            throw new BoardException(ResponseCodeEnum.BOARD_DELETE_SELF_USER);
+        }
+
+        if(!boardUser.isAccepted()){
+            throw new BoardException(ResponseCodeEnum.BOARD_INVITE_NOT_ACCEPT);
+        }
+
+
+        boardUserRepository.delete(boardUser);
+
+    }
+
+
     /* Utils */
 
     public void validateBoardManager(User user){
@@ -125,5 +148,6 @@ public class BoardService {
             throw new BoardException(ResponseCodeEnum.ACCESS_DENIED);
         }
     }
+
 
 }

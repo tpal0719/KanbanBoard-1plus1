@@ -28,8 +28,9 @@ public enum ResponseCodeEnum {
     // 보드 관련 예외
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다"),
     BOARD_INVITE_SELF_USER(HttpStatus.BAD_REQUEST,"본인을 초대할 수 없습니다."),
+    BOARD_DELETE_SELF_USER(HttpStatus.BAD_REQUEST,"본인을 삭제할 수 없습니다."),
     BOARD_INVITE_ACCEPT(HttpStatus.BAD_REQUEST,"이미 초대를 수락했습니다."),
-
+    BOARD_INVITE_NOT_ACCEPT(HttpStatus.BAD_REQUEST,"초대 대기중인 유저입니다."),
 
     // 카드 관련 예외
     CARD_NOT_FOUND(HttpStatus.NOT_FOUND, "카드를 찾을 수 없습니다"),
