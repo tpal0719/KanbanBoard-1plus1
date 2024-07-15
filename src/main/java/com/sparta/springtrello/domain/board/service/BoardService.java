@@ -9,6 +9,7 @@ import com.sparta.springtrello.domain.board.entity.Board;
 import com.sparta.springtrello.domain.board.entity.BoardUser;
 import com.sparta.springtrello.domain.board.repository.BoardRepository;
 import com.sparta.springtrello.domain.board.repository.BoardUserRepository;
+import com.sparta.springtrello.domain.card.entity.CardUser;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.column.repository.TaskColumnRepository;
 import com.sparta.springtrello.domain.user.entity.User;
@@ -46,6 +47,11 @@ public class BoardService {
 
         boardRepository.save(board);
 
+        BoardUser boardUser = BoardUser.builder()
+                .user(user)
+                .board(board)
+                .isCreator(true)
+                .build();
 
         // 기본 컬럼 추가
         addDefaultColumns(board);

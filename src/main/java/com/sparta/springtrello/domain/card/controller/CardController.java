@@ -68,6 +68,17 @@ public class CardController {
         return ResponseUtils.success(HttpStatus.OK);
     }
 
+    //카드 작업자 삭제
+    @DeleteMapping("/cards/{cardId}/delete/{userId}")
+    public ResponseEntity<HttpResponseDto<Void>> removeCardMember(
+            @PathVariable Long cardId,
+            @PathVariable Long userId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.deleteCardMember(cardId, userId, userDetails.getUser());
+        return ResponseUtils.success(HttpStatus.OK);
+    }
+
+
     // 카드 상세 수정
     @PutMapping("/cards/{cardId}")
     public ResponseEntity<HttpResponseDto<Void>> updateCard(

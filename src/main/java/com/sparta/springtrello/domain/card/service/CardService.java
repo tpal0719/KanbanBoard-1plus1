@@ -104,6 +104,9 @@ public class CardService {
 
         User user = userRepository.findById(userId).orElseThrow(()->new UserException(ResponseCodeEnum.USER_NOT_FOUND));
 
+        CardUser alreadyUser = cardUserRepository.findByCardIdAndUserId(card.getId(),userId).orElse(null);
+        if(alreadyUser != null) {throw new UserException(ResponseCodeEnum.USER_ALREADY_ACCEPT);}
+
         CardUser cardUser = CardUser.builder()
                 .user(user)
                 .card(card)
@@ -112,6 +115,21 @@ public class CardService {
 
         cardUserRepository.save(cardUser);
     }
+
+    // 카드 작업자 삭제
+    @Transactional
+    public void deleteCardMember(Long cardId, Long userId, User user) {
+
+        if(!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)){
+            throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
+        }
+
+        CardUser cardUser = cardUserRepository.findByCardIdAndUserId(cardId,userId)
+                .orElseThrow(()->new UserException(ResponseCodeEnum.USER_ALREADY_ACCEPT));;
+
+        cardUserRepository.delete(cardUser);
+    }
+
 
     // 카드 상세 변경
     @Transactional
@@ -247,4 +265,6 @@ public class CardService {
             throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
         }
     }
+
+
 }
