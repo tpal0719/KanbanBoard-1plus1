@@ -7,7 +7,7 @@ import com.sparta.springtrello.common.ResponseUtils;
 import com.sparta.springtrello.domain.user.dto.LoginRequestDto;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserStatusEnum;
-import com.sparta.springtrello.domain.user.repository.UserAdapter;
+import com.sparta.springtrello.domain.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,13 +28,13 @@ import java.io.IOException;
 @Slf4j(topic = "로그인 처리 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtProvider jwtProvider;
-    private final UserAdapter userAdapter;
+    private final UserService userService;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider, UserAdapter userAdapter, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, UserService userService, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
         this.jwtProvider = jwtProvider;
-        this.userAdapter = userAdapter;
+        this.userService = userService;
         this.objectMapper = objectMapper;
         this.passwordEncoder = passwordEncoder;
         setFilterProcessesUrl("/users/login");
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             LoginRequestDto requestDto = objectMapper.readValue(request.getInputStream(), LoginRequestDto.class);
             User user;
             try {
-                user = userAdapter.findByUsername(requestDto.getUsername());
+                user = userService.findByUsername(requestDto.getUsername());
             } catch (Exception e) {
                 setErrorResponse(response, ResponseCodeEnum.USER_NOT_FOUND);
                 return null;
@@ -89,7 +89,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
         user.setRefreshToken(refreshToken);
-        userAdapter.save(user);
+        userService.save(user);
 
         response.setStatus(HttpServletResponse.SC_OK);
 
