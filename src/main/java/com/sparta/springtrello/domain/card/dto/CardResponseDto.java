@@ -1,7 +1,9 @@
 package com.sparta.springtrello.domain.card.dto;
 
 import com.sparta.springtrello.domain.card.entity.Card;
+import com.sparta.springtrello.domain.checklist.dto.ChecklistResponseDto;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
+import com.sparta.springtrello.domain.comment.dto.CommentResponseDto;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,9 @@ public class CardResponseDto {
     private Integer cardOrder;
     private TaskColumnDto taskColumn;
 
+    private List<ChecklistResponseDto> checklist;
+    private List<CommentResponseDto> commentList;
+
     public CardResponseDto(Card card) {
         this.id = card.getId();
         this.cardName = card.getCardName();
@@ -24,6 +29,8 @@ public class CardResponseDto {
         this.dueDate = card.getDueDate();
         this.cardOrder = card.getCardOrder();
         this.taskColumn = new TaskColumnDto(card.getTaskColumn());
+        this.checklist = card.getChecklists().stream().map(ChecklistResponseDto::new).collect(Collectors.toList());
+        this.commentList = card.getComments().stream().map(CommentResponseDto::new).collect(Collectors.toList());
     }
 
     @Getter

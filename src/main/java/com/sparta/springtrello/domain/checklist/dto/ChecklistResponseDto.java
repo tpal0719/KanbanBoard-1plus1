@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 public class ChecklistResponseDto {
 
     private String checklistName;
-    private List<ChecklistItem> checklistItems;
+    private List<ChecklistItemResponseDto> checklistItems;
 
     public ChecklistResponseDto(Checklist checklist) {
         this.checklistName = checklist.getChecklistName();
-        this.checklistItems = checklist.getChecklistItems();
+        this.checklistItems = checklist.getChecklistItems().stream().map(ChecklistItemResponseDto::new).collect(Collectors.toList());
     }
 
     public static List<ChecklistResponseDto> fromEntities(List<Checklist> checklists) {
