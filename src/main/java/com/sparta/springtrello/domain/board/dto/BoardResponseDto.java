@@ -10,13 +10,14 @@ import java.util.stream.Collectors;
 
 @Getter
 public class BoardResponseDto {
-
+    private Long boardId;
     private String boardName;
     private String boardDescription;
 
     private List<String> boardMembers;
 
     public BoardResponseDto(Board board) {
+        this.boardId = board.getId(); // boardId 추가
         this.boardName = board.getBoardName();
         this.boardDescription = board.getBoardDescription();
 
