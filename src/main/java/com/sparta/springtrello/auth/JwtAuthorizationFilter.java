@@ -5,7 +5,7 @@ import com.sparta.springtrello.common.HttpResponseDto;
 import com.sparta.springtrello.common.ResponseCodeEnum;
 import com.sparta.springtrello.common.ResponseUtils;
 import com.sparta.springtrello.domain.user.entity.User;
-import com.sparta.springtrello.domain.user.repository.UserAdapter;
+import com.sparta.springtrello.domain.user.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -34,7 +34,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
-    private final UserAdapter userAdapter;
+    private final UserService userService;
     private final ObjectMapper objectMapper;
 
     private final List<String> anyMethodWhiteList = List.of(
@@ -42,10 +42,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     );
 
     public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService,
-                                  UserAdapter userAdapter, ObjectMapper objectMapper) {
+                                  UserService userService, ObjectMapper objectMapper) {
         this.jwtProvider = jwtProvider;
         this.userDetailsService = userDetailsService;
-        this.userAdapter = userAdapter;
+        this.userService = userService;
         this.objectMapper = objectMapper;
     }
 
@@ -72,7 +72,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             Claims accessTokenClaims = jwtProvider.getUserInfoFromToken(accessToken);
             String username = accessTokenClaims.getSubject();
-            User user = userAdapter.findByUsername(username);
+            User user = userService.findByUsername(username);
 
             if (user == null || user.getRefreshToken() == null) {
                 setErrorResponse(res);
@@ -113,7 +113,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             Claims refreshTokenClaims = jwtProvider.getUserInfoFromToken(refreshToken);
             String username = refreshTokenClaims.getSubject();
 
-            User user = userAdapter.findByUsername(username);
+            User user = userService.findByUsername(username);
             if (user != null && refreshToken.equals(user.getRefreshToken())) {
                 String newAccessToken = jwtProvider.createAccessToken(username);
                 res.addHeader(JwtProvider.AUTHORIZATION_HEADER, newAccessToken);

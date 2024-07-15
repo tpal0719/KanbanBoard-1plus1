@@ -11,7 +11,6 @@ import com.sparta.springtrello.domain.board.repository.BoardRepository;
 import com.sparta.springtrello.domain.board.repository.BoardUserRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
-import com.sparta.springtrello.domain.user.repository.UserAdapter;
 import com.sparta.springtrello.domain.user.repository.UserRepository;
 import com.sparta.springtrello.exception.custom.board.BoardException;
 import com.sparta.springtrello.exception.custom.user.UserException;
