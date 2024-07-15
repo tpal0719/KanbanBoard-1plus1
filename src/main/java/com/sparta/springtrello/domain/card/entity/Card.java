@@ -1,6 +1,7 @@
 package com.sparta.springtrello.domain.card.entity;
 
 import com.sparta.springtrello.common.Timestamped;
+import com.sparta.springtrello.domain.checklist.entity.Checklist;
 import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import com.sparta.springtrello.domain.comment.entity.Comment;
 import jakarta.persistence.*;
@@ -48,6 +49,10 @@ public class Card extends Timestamped {
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Checklist> checklists = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter

@@ -1,9 +1,10 @@
 package com.sparta.springtrello.domain.board.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.NotBlank;
+
 
 @Getter
 @NoArgsConstructor
