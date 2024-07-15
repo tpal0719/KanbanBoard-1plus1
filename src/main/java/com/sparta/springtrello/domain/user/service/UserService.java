@@ -49,14 +49,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User createKakaoUser(Long kakaoId, String nickname, String pictureUrl) {
         return userRepository.findByKakaoId(kakaoId).orElseGet(() -> {
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
             User newUser = new User(kakaoId, "kakao_" + kakaoId, pictureUrl, encodedPassword);
             newUser.setNickname(nickname);
-            userRepository.save(newUser);
-            return newUser;
+            return userRepository.save(newUser);
         });
     }
 
