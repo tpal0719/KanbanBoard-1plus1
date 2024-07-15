@@ -3,12 +3,13 @@ package com.sparta.springtrello.domain.user.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+
 
 @Getter
-@Setter
-public class UpdatePasswordRequestDto {
+@AllArgsConstructor
+public class PasswordUpdateRequestDto {
 
     @NotBlank(message = "현재 비밀번호는 필수 입력 값입니다.")
     private String currentPassword;

@@ -1,0 +1,134 @@
+package com.sparta.springtrello.domain.column.service;
+
+import com.sparta.springtrello.common.ResponseCodeEnum;
+import com.sparta.springtrello.domain.board.entity.Board;
+import com.sparta.springtrello.domain.board.repository.BoardRepository;
+import com.sparta.springtrello.domain.board.service.BoardService;
+import com.sparta.springtrello.domain.column.dto.TaskColumnCreateRequestDto;
+import com.sparta.springtrello.domain.column.dto.TaskColumnResponseDto;
+import com.sparta.springtrello.domain.column.dto.TaskColumnUpdateRequestDto;
+import com.sparta.springtrello.domain.column.entity.TaskColumn;
+import com.sparta.springtrello.domain.column.repository.TaskColumnRepository;
+import com.sparta.springtrello.domain.user.entity.User;
+import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
+import com.sparta.springtrello.exception.custom.column.ColumnException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class TaskColumnService {
+
+    private final TaskColumnRepository taskColumnRepository;
+    private final BoardRepository boardRepository;
+    private final BoardService boardService;
+
+    // 컬럼 생성
+    @Transactional
+    public void createTaskColumn(Long boardId, TaskColumnCreateRequestDto requestDto, User user) {
+        validateColumnManager(user);
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.BOARD_NOT_FOUND));
+        int columnOrder = taskColumnRepository.findMaxColumnOrderByBoardId(boardId) + 1;
+
+        TaskColumn taskColumn = TaskColumn.builder()
+                .board(board)
+                .columnName(requestDto.getColumnName())
+                .columnOrder(columnOrder)
+                .build();
+
+        taskColumnRepository.save(taskColumn);
+    }
+
+    // 컬럼 순서 변경
+    @Transactional
+    public void updateTaskColumnOrder(Long columnId, int newOrder, User user) {
+        validateColumnManager(user);
+
+        TaskColumn column = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
+        int oldOrder = column.getColumnOrder();
+        if (oldOrder == newOrder) return;
+
+        if (oldOrder < newOrder) {
+            taskColumnRepository.decreaseOrderForIntermediateColumns(column.getBoard().getId(), oldOrder, newOrder);
+        } else {
+            taskColumnRepository.increaseOrderForIntermediateColumns(column.getBoard().getId(), oldOrder, newOrder);
+        }
+
+        taskColumnRepository.updateColumnOrder(columnId, newOrder);
+    }
+
+    // 컬럼 조회 (전체)
+    @Transactional(readOnly = true)
+    public List<TaskColumnResponseDto> getTaskColumns(Long boardId, User user) {
+        isUserInBoard(user, boardId);
+        return taskColumnRepository.findAllByBoardIdOrderByColumnOrder(boardId).stream()
+                .map(TaskColumnResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    // 컬럼 조회 (단건)
+    @Transactional(readOnly = true)
+    public TaskColumnResponseDto getOneTaskColumn(Long columnId, User user) {
+        TaskColumn column = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
+        isUserInBoard(user, column.getBoard().getId());
+
+        return new TaskColumnResponseDto(column);
+    }
+
+    //컬럼 수정
+    @Transactional
+    public void updateTaskColumn(Long columnId, TaskColumnUpdateRequestDto taskColumnUpdateRequestDto, User user) {
+        validateColumnManager(user);
+        TaskColumn column = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
+        column.setColumnName(taskColumnUpdateRequestDto.getColumnName());
+        taskColumnRepository.save(column);
+    }
+
+    // 컬럼 삭제
+    @Transactional
+    public void deleteTaskColumn(Long columnId, User user) {
+        validateColumnManager(user);
+
+        TaskColumn taskColumn = taskColumnRepository.findById(columnId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.COLUMN_NOT_FOUND));
+        taskColumnRepository.delete(taskColumn);
+    }
+
+    /* Utils */
+
+    // 관리자인가?
+    private void validateColumnManager(User user) {
+        if (!user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+            throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
+        }
+    }
+
+    // 보드에 소속된 유저인가? - 컬럼 조작은 초대된 유저 or 매니저만 할수 있음
+    private void isUserInBoard(User user, Long boardId) {
+        //매니저인가?
+        if (user.getUserRole().equals(UserRoleEnum.ROLE_MANAGER)) {
+            return;
+        }
+
+        // 초대된 유저인가?
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ColumnException(ResponseCodeEnum.BOARD_NOT_FOUND));
+        for (var boardUser : board.getBoardUsers()) {
+            if (boardUser.getUser().equals(user)) {
+                return;
+            }
+        }
+
+        //매니저도 초대된 유저도 아님
+        throw new ColumnException(ResponseCodeEnum.ACCESS_DENIED);
+    }
+}

@@ -1,14 +1,17 @@
 package com.sparta.springtrello.domain.user.entity;
 
-
-
 import com.sparta.springtrello.common.Timestamped;
+import com.sparta.springtrello.domain.board.entity.BoardUser;
+import com.sparta.springtrello.domain.card.entity.CardUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -60,18 +63,28 @@ public class User extends Timestamped {
     @Column
     private Long kakaoId;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private List<BoardUser> boardUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private List<CardUser> cardUsers = new ArrayList<>();
+
+    @Builder
     public User(String username, String password, UserStatusEnum userStatus) {
         this.username = username;
         this.password = password;
         this.userStatus = userStatus;
     }
 
+    @Builder(builderMethodName = "kakaoUserBuilder")
     public User(Long kakaoId, String username, String pictureUrl, String password) {
         this.kakaoId = kakaoId;
         this.pictureUrl = pictureUrl;
         this.username = username;
         this.password = password;
         this.userStatus = UserStatusEnum.STATUS_NORMAL;
+        this.userRole = UserRoleEnum.ROLE_USER;
     }
-
 }
