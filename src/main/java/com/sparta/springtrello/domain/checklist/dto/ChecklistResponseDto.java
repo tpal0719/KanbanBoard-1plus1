@@ -11,12 +11,10 @@ import java.util.stream.Collectors;
 public class ChecklistResponseDto {
 
     private String checklistName;
-    //private float percentComplete;
     private List<ChecklistItem> checklistItems;
 
     public ChecklistResponseDto(Checklist checklist) {
         this.checklistName = checklist.getChecklistName();
-        //this.percentComplete = checklist.getPercentComplete();
         this.checklistItems = checklist.getChecklistItems();
     }
 

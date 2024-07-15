@@ -2,7 +2,6 @@ package com.sparta.springtrello.domain.checklist.service;
 
 
 import com.sparta.springtrello.common.ResponseCodeEnum;
-import com.sparta.springtrello.domain.board.entity.Board;
 import com.sparta.springtrello.domain.card.entity.Card;
 import com.sparta.springtrello.domain.card.entity.CardUser;
 import com.sparta.springtrello.domain.card.repository.CardRepository;
@@ -10,13 +9,12 @@ import com.sparta.springtrello.domain.checklist.dto.ChecklistCreateRequestDto;
 import com.sparta.springtrello.domain.checklist.dto.ChecklistResponseDto;
 import com.sparta.springtrello.domain.checklist.dto.ChecklistUpdateRequestDto;
 import com.sparta.springtrello.domain.checklist.entity.Checklist;
+import com.sparta.springtrello.domain.checklist.entity.ChecklistItem;
 import com.sparta.springtrello.domain.checklist.repository.ChecklistRepository;
 import com.sparta.springtrello.domain.user.entity.User;
 import com.sparta.springtrello.domain.user.entity.UserRoleEnum;
-import com.sparta.springtrello.exception.custom.board.BoardException;
 import com.sparta.springtrello.exception.custom.card.CardException;
 import com.sparta.springtrello.exception.custom.checklist.ChecklistException;
-import com.sparta.springtrello.exception.custom.column.ColumnException;
 import com.sparta.springtrello.exception.custom.common.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,6 +53,21 @@ public class ChecklistService {
     public ChecklistResponseDto getOneChecklist(Long checklistId, User user) {
         Checklist checklist = getChecklist(checklistId);
         return new ChecklistResponseDto(checklist);
+    }
+
+    public double calculateCompletionRate(Long checklistId) {
+        Checklist checklist = getChecklist(checklistId);
+
+        List<ChecklistItem> items = checklist.getChecklistItems();
+        if (items.isEmpty()) {
+            return 0.0;
+        }
+
+        long completedItems = items.stream()
+                .filter(ChecklistItem::isCompleted)
+                .count();
+
+        return (double) completedItems / items.size();
     }
 
     @Transactional
@@ -110,5 +123,6 @@ public class ChecklistService {
         // 작성자도 매니저도 아님
         throw new AccessDeniedException(ResponseCodeEnum.ACCESS_DENIED);
     }
+
 
 }

@@ -26,22 +26,18 @@ public class Checklist extends Timestamped {
     @Setter
     private String checklistName;
 
-//    @Setter
-//    private float percentComplete;
 
-
-    @OneToMany(mappedBy = "checklistItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
     private List<ChecklistItem> checklistItems = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card", nullable = false)
+    @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
     @Builder
-    public Checklist(String checklistName/*, float percent_complete*/, Card card) {
+    public Checklist(String checklistName, Card card) {
         this.checklistName = checklistName;
-        //this.percentComplete = percent_complete;
         this.card = card;
     }
 

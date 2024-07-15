@@ -1,7 +1,6 @@
 package com.sparta.springtrello.domain.checklist.entity;
 
 import com.sparta.springtrello.common.Timestamped;
-import com.sparta.springtrello.domain.column.entity.TaskColumn;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class ChecklistItem extends Timestamped {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "checklist", nullable = false)
+    @JoinColumn(name = "checklist_id", nullable = false)
     private Checklist checklist;
 
 

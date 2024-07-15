@@ -47,6 +47,12 @@ public class ChecklistController {
         return ResponseUtils.success(HttpStatus.OK, responseDto);
     }
 
+    // 체크리스트 진척도 조회
+    @GetMapping("/{checklistId}/completion-rate")
+    public double getCompletionRate(@PathVariable Long checklistId) {
+        return checklistService.calculateCompletionRate(checklistId);
+    }
+
     // 체크리스트 수정
     @PutMapping("/checklist/{checklistId}")
     public ResponseEntity<HttpResponseDto<Void>> updateChecklist(@PathVariable Long checklistId,
