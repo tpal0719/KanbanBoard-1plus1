@@ -153,6 +153,9 @@ DTO
 ## API
 https://documenter.getpostman.com/view/19185435/2sA3kPqjxN
 
+## 시연영상
+https://www.youtube.com/watch?v=AYkUCgb06AM
+
 ## ERD
 ![image](https://github.com/user-attachments/assets/1ccec1c2-ab2d-46a9-9a4b-92867941a9c9)
 
