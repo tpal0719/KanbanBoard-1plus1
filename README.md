@@ -151,7 +151,7 @@ DTO
 - api 요청 단위로 테스트 및 진행
 
 ## API
-https://blue-capsule-553668.postman.co/workspace/34a132fb-5ab3-4220-84e9-b2a26779b990/documentation/19185435-1edc738a-45b7-4277-98b7-06d2b0db4160
+https://documenter.getpostman.com/view/19185435/2sA3kPqjxN
 
 ## ERD
 ![image](https://github.com/user-attachments/assets/1ccec1c2-ab2d-46a9-9a4b-92867941a9c9)
