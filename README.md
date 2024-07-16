@@ -121,7 +121,7 @@
 - `GlobalExceptionAdvice`에 글로벌 관리 하고 
   - `CustoEmxception` 핸들링
   - `MethodArgumentNotValidException`를 통해 dto, 엔티티 데이터 유효성 검사 관리
-- 도메인별 예외처리 CustoEmxception 를 상속받아 관리 ex) user/UserException
+- 도메인별 예외처리 CustomException 를 상속받아 관리 ex) user/UserException
 - 범용적 커스텀 에러 정의하고 비지니스로직에서 이넘메세지를 던져주어 예외 처리
 
 ### 각 파일별 적용
